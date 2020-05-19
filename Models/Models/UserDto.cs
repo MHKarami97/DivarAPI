@@ -146,9 +146,6 @@ namespace Models.Models
 
         public GenderType Gender { get; set; }
 
-        [IgnoreMap]
-        public bool IsFollowed { get; set; }
-
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (UserName.Equals("test", StringComparison.OrdinalIgnoreCase))

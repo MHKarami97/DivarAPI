@@ -48,7 +48,7 @@ namespace Repositories.Repositories
         public async Task<DateTimeOffset> Create(CommentDto dto, CancellationToken cancellationToken)
         {
             var lastComment = await TableNoTracking
-                .Where(a => !a.VersionStatus.Equals(2) && a.PostId.Equals(dto.PostId) && a.UserId.Equals(dto.UserId))
+                .Where(a => !a.VersionStatus.Equals(2) && a.PostId.Equals(dto.PostId) && a.CreatorId.Equals(dto.CreatorId))
                 .OrderByDescending(a => a.Time)
                 .Select(a => a.Time)
                 .FirstAsync(cancellationToken);

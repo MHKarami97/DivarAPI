@@ -24,7 +24,6 @@ namespace Entities.User
         public DateTimeOffset? LastLoginDate { get; set; }
 
         public ICollection<Post.Post> Posts { get; set; }
-        public ICollection<Employ.Employ> Employs { get; set; }
         public ICollection<Favorite> Favorites { get; set; }
         public ICollection<Contact.Contact> Contacts { get; set; }
         public ICollection<View> Views { get; set; }

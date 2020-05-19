@@ -18,8 +18,6 @@ namespace Repositories.Contracts
 
         Task<ApiResult<List<ViewShortDto>>> GetView(CancellationToken cancellationToken, int id);
 
-        Task<ApiResult<List<LikeShortDto>>> GetLike(CancellationToken cancellationToken, int id);
-
         Task<ApiResult<List<PostShortSelectDto>>> GetCustom(CancellationToken cancellationToken, int type, int dateType, int count);
 
         Task<ApiResult<List<PostShortSelectDto>>> Search(CancellationToken cancellationToken, string str);

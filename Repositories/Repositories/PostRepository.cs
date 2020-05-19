@@ -22,14 +22,12 @@ namespace Repositories.Repositories
 {
     public class PostRepository : Repository<Post>, IPostRepository, IScopedDependency, IBaseRepository
     {
-        private readonly IRepository<Like> _repositoryLike;
         private readonly IRepository<Comment> _repositoryComment;
         private readonly IRepository<View> _repositoryView;
 
-        public PostRepository(ApplicationDbContext dbContext, IMapper mapper, IRepository<Like> repositoryLike, IRepository<Comment> repositoryComment, IRepository<View> repositoryView)
+        public PostRepository(ApplicationDbContext dbContext, IMapper mapper, IRepository<Comment> repositoryComment, IRepository<View> repositoryView)
             : base(dbContext, mapper)
         {
-            _repositoryLike = repositoryLike;
             _repositoryComment = repositoryComment;
             _repositoryView = repositoryView;
         }
@@ -83,17 +81,6 @@ namespace Repositories.Repositories
             return result;
         }
 
-        public async Task<ApiResult<List<LikeShortDto>>> GetLike(CancellationToken cancellationToken, int id)
-        {
-            var result = await _repositoryLike.TableNoTracking
-                .Where(a => !a.VersionStatus.Equals(2) && a.PostId.Equals(id))
-                .OrderByDescending(a => a.Time)
-                .ProjectTo<LikeShortDto>(Mapper.ConfigurationProvider)
-                .ToListAsync(cancellationToken);
-
-            return result;
-        }
-
         public async Task<ApiResult<List<PostShortSelectDto>>> GetCustom(CancellationToken cancellationToken, int type, int dateType, int count)
         {
             if (count > 30)
@@ -117,35 +104,16 @@ namespace Repositories.Repositories
 
                             return list;
 
+
                         case 2:
-                            var result = await _repositoryLike.TableNoTracking
-                                .GroupBy(a => a.PostId)
-                                .Select(g => new { g.Key, Count = g.Count() })
-                                .OrderByDescending(a => a.Count)
-                                .Take(count)
-                                .ToListAsync(cancellationToken);
-
-                            var ids = result.Select(item => item.Key).ToList();
-
-                            list = await TableNoTracking
-                               .Where(a => !a.VersionStatus.Equals(2))
-                               .Where(a => ids.Contains(a.Id))
-                               .OrderByDescending(a => a.Time)
-                               .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
-                               .Take(count)
-                               .ToListAsync(cancellationToken);
-
-                            return list;
-
-                        case 3:
-                            result = await _repositoryView.TableNoTracking
+                            var result = await _repositoryView.TableNoTracking
                                .GroupBy(a => a.PostId)
                                .Select(g => new { g.Key, Count = g.Count() })
                                .OrderByDescending(a => a.Count)
                                .Take(count)
                                .ToListAsync(cancellationToken);
 
-                            ids = result.Select(item => item.Key).ToList();
+                            var ids = result.Select(item => item.Key).ToList();
 
                             list = await TableNoTracking
                                 .Where(a => !a.VersionStatus.Equals(2))
@@ -196,7 +164,7 @@ namespace Repositories.Repositories
                             return list;
 
                         case 2:
-                            var result = await _repositoryLike.TableNoTracking
+                            var result = await _repositoryView.TableNoTracking
                                 .GroupBy(a => a.PostId)
                                 .Select(g => new { g.Key, Count = g.Count() })
                                 .OrderByDescending(a => a.Count)
@@ -204,27 +172,6 @@ namespace Repositories.Repositories
                                 .ToListAsync(cancellationToken);
 
                             var ids = result.Select(item => item.Key).ToList();
-
-                            list = await TableNoTracking
-                               .Where(a => !a.VersionStatus.Equals(2))
-                               .Where(a => ids.Contains(a.Id))
-                               .Where(a => a.Time.Year == today.Year && a.Time.Month == today.Month)
-                               .OrderByDescending(a => a.Time)
-                               .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
-                               .Take(count)
-                               .ToListAsync(cancellationToken);
-
-                            return list;
-
-                        case 3:
-                            result = await _repositoryView.TableNoTracking
-                               .GroupBy(a => a.PostId)
-                               .Select(g => new { g.Key, Count = g.Count() })
-                               .OrderByDescending(a => a.Count)
-                               .Take(count)
-                               .ToListAsync(cancellationToken);
-
-                            ids = result.Select(item => item.Key).ToList();
 
                             list = await TableNoTracking
                                 .Where(a => !a.VersionStatus.Equals(2))
@@ -276,36 +223,15 @@ namespace Repositories.Repositories
 
                             return list;
 
-                        case 2:
-                            var result = await _repositoryLike.TableNoTracking
-                                .GroupBy(a => a.PostId)
-                                .Select(g => new { g.Key, Count = g.Count() })
-                                .OrderByDescending(a => a.Count)
-                                .Take(count)
-                                .ToListAsync(cancellationToken);
-
-                            var ids = result.Select(item => item.Key).ToList();
-
-                            list = await TableNoTracking
-                               .Where(a => !a.VersionStatus.Equals(2))
-                               .Where(a => ids.Contains(a.Id))
-                               .Where(a => a.Time >= week)
-                               .OrderByDescending(a => a.Time)
-                               .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
-                               .Take(count)
-                               .ToListAsync(cancellationToken);
-
-                            return list;
-
                         case 3:
-                            result = await _repositoryView.TableNoTracking
+                            var result = await _repositoryView.TableNoTracking
                                .GroupBy(a => a.PostId)
                                .Select(g => new { g.Key, Count = g.Count() })
                                .OrderByDescending(a => a.Count)
                                .Take(count)
                                .ToListAsync(cancellationToken);
 
-                            ids = result.Select(item => item.Key).ToList();
+                            var ids = result.Select(item => item.Key).ToList();
 
                             list = await TableNoTracking
                                 .Where(a => !a.VersionStatus.Equals(2))

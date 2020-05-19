@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Repositories.Contracts;
 using Services.CronJob;
-using Services.Recommend;
 using Services.Security;
 
 namespace WebFramework.Configuration
@@ -52,8 +51,6 @@ namespace WebFramework.Configuration
                 .SingleInstance();
 
             containerBuilder.RegisterType<Security>().As<ISecurity>();
-
-            containerBuilder.RegisterType<Recommend>().As<IRecommend>();
 
             containerBuilder.RegisterType<Date>().As<IDate>();
 
