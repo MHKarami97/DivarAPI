@@ -24,22 +24,16 @@ namespace MyApi.Controllers.v1
     {
         private readonly IPostRepository _postRepository;
         private readonly UserManager<User> _userManager;
-        private readonly IRepository<Like> _repositoryLike;
         private readonly IRepository<PostTag> _repositoryTag;
-        private readonly IRepository<Follower> _repositoryFollower;
-        private readonly IRepository<Comment> _repositoryComment;
-        private readonly IRepository<View> _repositoryView;
+        private readonly IRepository<Favorite> _repositoryFavorite;
         private readonly ViewsController _viewsController;
 
-        public PostsController(IRepository<Post> repository, IMapper mapper, UserManager<User> userManager, IRepository<PostTag> repositoryTag, IRepository<Follower> repositoryFollower, IRepository<Like> repositoryLike, IRepository<Comment> repositoryComment, IRepository<View> repositoryView, ViewsController viewsController, IPostRepository postRepository)
+        public PostsController(IRepository<Post> repository, IMapper mapper, UserManager<User> userManager, IRepository<PostTag> repositoryTag, IRepository<Favorite> repositoryFavorite, ViewsController viewsController, IPostRepository postRepository)
             : base(repository, mapper)
         {
             _userManager = userManager;
             _repositoryTag = repositoryTag;
-            _repositoryFollower = repositoryFollower;
-            _repositoryLike = repositoryLike;
-            _repositoryComment = repositoryComment;
-            _repositoryView = repositoryView;
+            _repositoryFavorite = repositoryFavorite;
             _viewsController = viewsController;
             _postRepository = postRepository;
         }
@@ -53,59 +47,35 @@ namespace MyApi.Controllers.v1
         [AllowAnonymous]
         public override async Task<ApiResult<PostSelectDto>> Get(int id, CancellationToken cancellationToken)
         {
-            ApiResult<PostSelectDto> result = await base.Get(id, cancellationToken);
+            var result = await base.Get(id, cancellationToken);
 
-            result.Data.IsFollowed = false;
-            result.Data.IsLiked = false;
-            bool isAuthorize = false;
+            result.Data.IsFavorite = false;
+
+            var isAuthorize = false;
 
             if (UserIsAutheticated)
             {
-                int userId = HttpContext.User.Identity.GetUserId<int>();
+                var userId = HttpContext.User.Identity.GetUserId<int>();
 
-                bool isFollowed = await _repositoryFollower.TableNoTracking
-                    .AnyAsync(a => a.VersionStatus.Equals(2) && a.FollowerId.Equals(result.Data.UserId) && a.UserId.Equals(userId), cancellationToken);
-
-                bool isLiked = await _repositoryLike.TableNoTracking
+                var isFavorite = await _repositoryFavorite.TableNoTracking
                     .AnyAsync(a => a.VersionStatus.Equals(2) && a.PostId.Equals(result.Data.Id) && a.UserId.Equals(userId), cancellationToken);
 
-                if (isLiked)
+                if (isFavorite)
                 {
-                    result.Data.IsLiked = true;
-                }
-
-                if (isFollowed)
-                {
-                    result.Data.IsFollowed = true;
+                    result.Data.IsFavorite = true;
                 }
 
                 isAuthorize = true;
             }
 
-            List<TagDto> tags = await _repositoryTag.TableNoTracking
+            var tags = await _repositoryTag.TableNoTracking
             .Where(a => !a.VersionStatus.Equals(2) && a.PostId.Equals(result.Data.Id))
             .Include(a => a.Tag)
             .Select(a => a.Tag)
             .ProjectTo<TagDto>(Mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
-            int likesCount = await _repositoryLike.TableNoTracking
-                .CountAsync(a => !a.VersionStatus.Equals(2) && a.PostId.Equals(result.Data.Id), cancellationToken);
-
-            float likes = await _repositoryLike.TableNoTracking
-                .Where(a => !a.VersionStatus.Equals(2) && a.PostId.Equals(result.Data.Id))
-                .SumAsync(a => a.Rate, cancellationToken);
-
-            int comments = await _repositoryComment.TableNoTracking
-                .CountAsync(a => !a.VersionStatus.Equals(2) && a.PostId.Equals(result.Data.Id), cancellationToken);
-
-            int views = await _repositoryView.TableNoTracking
-                .CountAsync(a => !a.VersionStatus.Equals(2) && a.PostId.Equals(result.Data.Id), cancellationToken);
-
             result.Data.Tags = tags;
-            result.Data.View = views;
-            result.Data.Likes = likes / likesCount;
-            result.Data.Comment = comments;
 
             await _viewsController.IncreaseView(id, isAuthorize, cancellationToken);
 
@@ -180,13 +150,6 @@ namespace MyApi.Controllers.v1
         public virtual async Task<ApiResult<List<ViewShortDto>>> GetView(int id, CancellationToken cancellationToken)
         {
             return await _postRepository.GetView(cancellationToken, id);
-        }
-
-        [AllowAnonymous]
-        [HttpGet("{id:int}")]
-        public virtual async Task<ApiResult<List<LikeShortDto>>> GetLike(int id, CancellationToken cancellationToken)
-        {
-            return await _postRepository.GetLike(cancellationToken, id);
         }
 
         [HttpGet]

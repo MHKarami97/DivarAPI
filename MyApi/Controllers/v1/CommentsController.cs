@@ -68,10 +68,7 @@ namespace MyApi.Controllers.v1
 
         public override async Task<ApiResult<CommentSelectDto>> Create(CommentDto dto, CancellationToken cancellationToken)
         {
-            dto.UserId = HttpContext.User.Identity.GetUserId<int>();
-
-            // dto.Time = DateTimeOffset.Now;
-            // dto.Text = dto.Text.FixPersianChars();
+            dto.CreatorId = HttpContext.User.Identity.GetUserId<int>();
 
             if (!_security.TimeCheck(await _commentRepository.Create(dto, cancellationToken)))
                 return BadRequest("لطفا کمی صبر کنید و بعد نظر بدهید");

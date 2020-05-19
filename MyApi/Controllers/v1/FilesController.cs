@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Models.Base;
 using Services.Security;
+using System.Collections.Generic;
 using System.IO;
 using WebFramework.Api;
 
@@ -23,32 +24,41 @@ namespace MyApi.Controllers.v1
 
         [HttpPost]
         [RequestSizeLimit(900_000)]
-        public ApiResult<string> UploadImage(IFormFile file)
+        public ApiResult<List<string>> Create(List<IFormFile> files)
         {
-            switch (_security.ImageCheck(file))
+            var result = new List<string>();
+
+            foreach (var file in files)
             {
-                case 0:
-                    break;
+                switch (_security.ImageCheck(file))
+                {
+                    case 0:
+                        break;
 
-                case 1:
-                    return BadRequest("فایل نامعتبر است");
+                    case 1:
+                        return BadRequest("فایل نامعتبر است");
 
-                case 2:
-                    return BadRequest("فرمت فایل نامعتبر است");
+                    case 2:
+                        return BadRequest("فرمت فایل نامعتبر است");
 
-                case 3:
-                    return BadRequest("حداکثر حجم فایل نامعتبر است");
+                    case 3:
+                        return BadRequest("حداکثر حجم فایل نامعتبر است");
+                }
+
+                var uploads = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads");
+
+                var address = _security.GetUniqueFileName(file.FileName);
+
+                var fullPath = Path.Combine(uploads, address);
+
+                file.CopyTo(new FileStream(fullPath, FileMode.Create));
+
+                result.Add(address);
             }
 
-            var uploads = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads");
 
-            var address = _security.GetUniqueFileName(file.FileName);
 
-            var fullPath = Path.Combine(uploads, address);
-
-            file.CopyTo(new FileStream(fullPath, FileMode.Create));
-
-            return Ok("uploads/" + address);
+            return Ok(result);
         }
     }
 }
