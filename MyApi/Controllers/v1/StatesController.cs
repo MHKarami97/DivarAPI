@@ -17,12 +17,12 @@ namespace MyApi.Controllers.v1
     [ApiVersion("1")]
     public class StatesController : CrudController<StateCreateDto, StateDto, State>
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IStateRepository _stateRepository;
 
-        public StatesController(IRepository<State> repository, IMapper mapper, ICategoryRepository categoryRepository)
+        public StatesController(IRepository<State> repository, IMapper mapper, IStateRepository stateRepository)
             : base(repository, mapper)
         {
-            _categoryRepository = categoryRepository;
+            _stateRepository = stateRepository;
         }
 
         [AllowAnonymous]
@@ -68,23 +68,23 @@ namespace MyApi.Controllers.v1
 
         [HttpGet]
         [AllowAnonymous]
-        public virtual async Task<ApiResult<List<CategoryDto>>> GetAllMainCat(CancellationToken cancellationToken)
+        public virtual async Task<ApiResult<List<StateDto>>> GetAllMainCat(CancellationToken cancellationToken)
         {
-            return await _categoryRepository.GetAllMainCat(cancellationToken);
+            return await _stateRepository.GetAllMainCat(cancellationToken);
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public virtual async Task<ApiResult<List<CategoryWithSubCatDto>>> GetCategoryWithSub(CancellationToken cancellationToken)
+        public virtual async Task<ApiResult<List<StateWithSubCatDto>>> GetCategoryWithSub(CancellationToken cancellationToken)
         {
-            return await _categoryRepository.GetCategoryWithSub(cancellationToken);
+            return await _stateRepository.GetCategoryWithSub(cancellationToken);
         }
 
         [AllowAnonymous]
         [HttpGet("{id:int}")]
-        public virtual async Task<ApiResult<List<CategoryDto>>> GetAllByCatId(int id, CancellationToken cancellationToken)
+        public virtual async Task<ApiResult<List<StateDto>>> GetAllByCatId(int id, CancellationToken cancellationToken)
         {
-            return await _categoryRepository.GetAllByCatId(id, cancellationToken);
+            return await _stateRepository.GetAllByCatId(id, cancellationToken);
         }
     }
 }
