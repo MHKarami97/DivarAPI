@@ -4,42 +4,72 @@ using System.Linq;
 using Common.Utilities;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Builder;
+using Swashbuckle.AspNetCore.Filters;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Filters;
 
 namespace WebFramework.Swagger
 {
     public static class SwaggerConfigurationExtensions
     {
-        [Obsolete]
         public static void AddSwagger(this IServiceCollection services)
         {
             Assert.NotNull(services, nameof(services));
 
             #region AddSwaggerExamples
+            //Add services to use Example Filters in swagger
+            //If you want to use the Request and Response example filters (and have called options.ExampleFilters() above), then you MUST also call
+            //This method to register all ExamplesProvider classes form the assembly
+            //services.AddSwaggerExamplesFromAssemblyOf<PersonRequestExample>();
+
+            //We call this method for by reflection with the Startup type of entry assembly (MyApi assembly)
             var mainAssembly = Assembly.GetEntryAssembly(); // => MyApi project assembly
-            if (mainAssembly != null)
-            {
-                var mainType = mainAssembly.GetExportedTypes()[0];
+            var mainType = mainAssembly.GetExportedTypes()[0];
 
-                const string methodName = nameof(Swashbuckle.AspNetCore.Filters.ServiceCollectionExtensions.AddSwaggerExamplesFromAssemblyOf);
-                var method = typeof(Swashbuckle.AspNetCore.Filters.ServiceCollectionExtensions).GetMethod(methodName);
-                if (method != null)
-                {
-                    var generic = method.MakeGenericMethod(mainType);
-                    generic.Invoke(null, new[] { services });
-                }
-            }
-
+            const string methodName = nameof(Swashbuckle.AspNetCore.Filters.ServiceCollectionExtensions.AddSwaggerExamplesFromAssemblyOf);
+            //MethodInfo method = typeof(Swashbuckle.AspNetCore.Filters.ServiceCollectionExtensions).GetMethod(methodName);
+            var method = typeof(Swashbuckle.AspNetCore.Filters.ServiceCollectionExtensions).GetRuntimeMethods().FirstOrDefault(x => x.Name == methodName && x.IsGenericMethod);
+            var generic = method.MakeGenericMethod(mainType);
+            generic.Invoke(null, new[] { services });
             #endregion
 
             //Add services and configuration to use swagger
             services.AddSwaggerGen(options =>
             {
+                var xmlDocPath = Path.Combine(AppContext.BaseDirectory, "MyApi.xml");
+                //show controller XML comments like summary
+                options.IncludeXmlComments(xmlDocPath, true);
+
+                options.EnableAnnotations();
+
+                #region DescribeAllEnumsAsStrings
+                //This method was Deprecated. 
+                options.DescribeAllEnumsAsStrings();
+
+                //You can specify an enum to convert to/from string, using :
+                //[JsonConverter(typeof(StringEnumConverter))]
+                //public virtual MyEnums MyEnum { get; set; }
+
+                //Or can apply the StringEnumConverter to all enums globally, using :
+                //SerializerSettings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
+                //OR
+                //JsonConvert.DefaultSettings = () =>
+                //{
+                //    var settings = new JsonSerializerSettings();
+                //    settings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
+                //    return settings;
+                //};
+                #endregion
+
+                //options.DescribeAllParametersInCamelCase();
+                //options.DescribeStringEnumsInCamelCase()
+                //options.UseReferencedDefinitionsForEnums()
+                //options.IgnoreObsoleteActions();
+                //options.IgnoreObsoleteProperties();
+
                 options.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
@@ -59,32 +89,25 @@ namespace WebFramework.Swagger
                     }
                 });
 
-                var xmlDocPath = Path.Combine(AppContext.BaseDirectory, "MyApi.xml");
-                //show controller XML comments like summary
-                options.IncludeXmlComments(xmlDocPath, true);
-
-                options.EnableAnnotations();
-                options.DescribeAllEnumsAsStrings();
-                //options.DescribeAllParametersInCamelCase();
-                //options.DescribeStringEnumsInCamelCase()
-                //options.UseReferencedDefinitionsForEnums()
-                //options.IgnoreObsoleteActions();
-                //options.IgnoreObsoleteProperties();
-
-                options.ExampleFilters();
-
                 #region Filters
                 //Enable to use [SwaggerRequestExample] & [SwaggerResponseExample]
-                //options.ExampleFilters();
+                options.ExampleFilters();
 
+                //It doesn't work anymore in recent versions because of replacing Swashbuckle.AspNetCore.Examples with Swashbuckle.AspNetCore.Filters
                 //Adds an Upload button to endpoints which have [AddSwaggerFileUploadButton]
                 //options.OperationFilter<AddFileParamTypesOperationFilter>();
 
                 //Set summary of action if not already set
                 options.OperationFilter<ApplySummariesOperationFilter>();
 
+                #region Add UnAuthorized to Response
+                //Add 401 response and security requirements (Lock icon) to actions that need authorization
+                options.OperationFilter<UnauthorizedResponsesOperationFilter>(true, "OAuth2");
+                #endregion
+
                 #region Add Jwt Authentication
                 //Add Lockout icon on top of swagger ui page to authenticate
+                #region Old way
                 //options.AddSecurityDefinition("Bearer", new ApiKeyScheme
                 //{
                 //    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
@@ -94,6 +117,18 @@ namespace WebFramework.Swagger
                 //options.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
                 //{
                 //    {"Bearer", new string[] { }}
+                //});
+                #endregion
+
+                //options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                //{
+                //    {
+                //        new OpenApiSecurityScheme
+                //        {
+                //            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "OAuth2" }
+                //        },
+                //        Array.Empty<string>() //new[] { "readAccess", "writeAccess" }
+                //    }
                 //});
 
                 //OAuth2Scheme
@@ -106,15 +141,11 @@ namespace WebFramework.Swagger
                     {
                         Password = new OpenApiOAuthFlow
                         {
-                            TokenUrl = new Uri("https://localhost:44339/api/v1/users/Token")
+                            TokenUrl = new Uri("http://5.63.13.16/api/v1/users/Token"),
+                            //TokenUrl = new Uri("https://localhost:5001/api/v1/users/Token"),
                         }
                     }
                 });
-                #endregion
-
-                #region Add UnAuthorized to Response
-                //Add 401 response and security requirements (Lock icon) to actions that need authorization
-                options.OperationFilter<UnauthorizedResponsesOperationFilter>(true, "OAuth2");
                 #endregion
 
                 #region Versioning
@@ -129,7 +160,7 @@ namespace WebFramework.Swagger
                 {
                     if (!apiDesc.TryGetMethodInfo(out var methodInfo)) return false;
 
-                    var versions = (methodInfo.DeclaringType ?? throw new InvalidOperationException())
+                    var versions = methodInfo.DeclaringType
                         .GetCustomAttributes<ApiVersionAttribute>(true)
                         .SelectMany(attr => attr.Versions);
 
@@ -147,7 +178,6 @@ namespace WebFramework.Swagger
         {
             Assert.NotNull(app, nameof(app));
 
-            //Swagger middleware for generate "Open API Documentation" in swagger.json
             app.UseSwagger(options =>
             {
                 //options.RouteTemplate = "api-docs/{documentName}/swagger.json";
@@ -156,6 +186,9 @@ namespace WebFramework.Swagger
             //Swagger middleware for generate UI from swagger.json
             app.UseSwaggerUI(options =>
             {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "V1 Docs");
+                options.RoutePrefix = "swagger";
+
                 #region Customizing
                 //// Display
                 //options.DefaultModelExpandDepth(2);
@@ -164,13 +197,13 @@ namespace WebFramework.Swagger
                 //options.DisplayOperationId();
                 //options.DisplayRequestDuration();
                 options.DocExpansion(DocExpansion.None);
-                options.EnableDeepLinking();
+                //options.EnableDeepLinking();
                 //options.EnableFilter();
                 //options.MaxDisplayedTags(5);
-                options.ShowExtensions();
+                //options.ShowExtensions();
 
                 //// Network
-                options.EnableValidator();
+                //options.EnableValidator();
                 //options.SupportedSubmitMethods(SubmitMethod.Get);
 
                 //// Other
@@ -179,16 +212,6 @@ namespace WebFramework.Swagger
                 //options.InjectJavascript("/ext/custom-javascript.js");
                 //options.RoutePrefix = "api-docs";
                 #endregion
-
-                options.OAuthClientId("test-id");
-                options.OAuthClientSecret("test-secret");
-                options.OAuthRealm("test-realm");
-                options.OAuthAppName("test-app");
-                options.OAuthScopeSeparator(" ");
-                //options.OAuthAdditionalQueryStringParams(new Dictionary<string, string> { { "foo", "bar" }}); 
-                options.OAuthUseBasicAuthenticationWithAccessCodeGrant();
-
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "V1 Docs");
             });
 
             //ReDoc UI middleware. ReDoc UI is an alternative to swagger-ui
