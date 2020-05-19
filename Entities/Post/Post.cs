@@ -16,7 +16,7 @@ namespace Entities.Post
         public int Type { get; set; }
         public long Price { get; set; }
         public bool IsConfirm { get; set; }
-        public string TelPhone { get; set; }
+        public string Phone { get; set; }
         public string Location { get; set; }
 
         public int CategoryId { get; set; }

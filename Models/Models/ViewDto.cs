@@ -1,9 +1,9 @@
-﻿using AutoMapper;
-using Entities.User;
+﻿using System;
+using AutoMapper;
 using Models.Base;
-using System;
-using System.ComponentModel.DataAnnotations;
+using Entities.User;
 using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
 
 namespace Models.Models
 {

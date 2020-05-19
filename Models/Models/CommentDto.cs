@@ -21,7 +21,10 @@ namespace Models.Models
         public int PostId { get; set; }
 
         [JsonIgnore]
-        public int UserId { get; set; }
+        public int CreatorId { get; set; }
+
+        [JsonIgnore]
+        public int AnswererId { get; set; }
 
         [JsonIgnore]
         public DateTimeOffset Time { get; set; }
@@ -30,16 +33,14 @@ namespace Models.Models
     public class CommentSelectDto : BaseDto<CommentSelectDto, Comment>
     {
         public string Text { get; set; }
-        public int PostId { get; set; }
-        public int UserId { get; set; }
-        public string UserFullName { get; set; }
+        public int PostTitle { get; set; }
         public string Time { get; set; }
 
         public override void CustomMappings(IMappingExpression<Comment, CommentSelectDto> mappingExpression)
         {
             mappingExpression.ForMember(
                 dest => dest.Time,
-                config => config.MapFrom(src => src.Time.ToString("d")));
+                config => config.MapFrom(src => src.Time.ToString("g")));
         }
     }
 }

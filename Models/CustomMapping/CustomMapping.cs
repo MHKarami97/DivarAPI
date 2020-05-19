@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Common.Utilities;
 using Entities.Contact;
-using Entities.Employ;
 using Entities.Post;
 using Models.Models;
 using System;
@@ -24,13 +23,13 @@ namespace Models.CustomMapping
                     opt =>
                         opt.MapFrom(src => src.Text.FixPersianChars()))
 
+                .ForMember(dest => dest.IsConfirm,
+                    opt =>
+                        opt.MapFrom(src => false))
+
                 .ForMember(dest => dest.Title,
                     opt =>
-                        opt.MapFrom(src => src.Title.FixPersianChars()))
-
-                .ForMember(dest => dest.ShortDescription,
-                    opt =>
-                        opt.MapFrom(src => src.ShortDescription.FixPersianChars()));
+                        opt.MapFrom(src => src.Title.FixPersianChars()));
         }
     }
 
@@ -61,25 +60,6 @@ namespace Models.CustomMapping
                 .ForMember(dest => dest.Text,
                     opt =>
                         opt.MapFrom(src => src.Text.FixPersianChars()));
-        }
-    }
-
-    public class EmployCustomMapping : IHaveCustomMapping
-    {
-        public void CreateMappings(Profile profile)
-        {
-            profile.CreateMap<Employ, EmployDto>().ReverseMap()
-                .ForMember(dest => dest.Time,
-                    opt =>
-                        opt.MapFrom(src => DateTimeOffset.Now))
-
-                .ForMember(dest => dest.Text,
-                    opt =>
-                        opt.MapFrom(src => src.Text.FixPersianChars()))
-
-                .ForMember(dest => dest.Title,
-                    opt =>
-                        opt.MapFrom(src => src.Title.FixPersianChars()));
         }
     }
 }
