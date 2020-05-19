@@ -24,13 +24,12 @@ namespace Entities.User
         public DateTimeOffset? LastLoginDate { get; set; }
 
         public ICollection<Post.Post> Posts { get; set; }
-        public ICollection<Comment> Comments { get; set; }
         public ICollection<Employ.Employ> Employs { get; set; }
         public ICollection<Favorite> Favorites { get; set; }
-        public ICollection<Follower> Followers { get; set; }
         public ICollection<Contact.Contact> Contacts { get; set; }
-        public ICollection<Like> Likes { get; set; }
         public ICollection<View> Views { get; set; }
+        public ICollection<Comment> AnswererComments { get; set; }
+        public ICollection<Comment> StarterComments { get; set; }
     }
 
     public class UserConfiguration : IEntityTypeConfiguration<User>

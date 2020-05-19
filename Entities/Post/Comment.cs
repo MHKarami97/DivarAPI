@@ -10,7 +10,8 @@ namespace Entities.Post
         public string Text { get; set; }
         public DateTimeOffset Time { get; set; }
         public int PostId { get; set; }
-        public int UserId { get; set; }
+        public int CreatorId { get; set; }
+        public int AnswererId { get; set; }
 
         public Post Post { get; set; }
         public User.User User { get; set; }
@@ -23,7 +24,7 @@ namespace Entities.Post
             builder.Property(p => p.Text).IsRequired().HasMaxLength(1000);
             builder.Property(p => p.Time).IsRequired();
             builder.Property(p => p.PostId).IsRequired();
-            builder.Property(p => p.UserId).IsRequired();
+            builder.Property(p => p.CreatorId).IsRequired();
 
             builder.HasOne(p => p.Post)
                 .WithMany(c => c.Comments)
@@ -31,12 +32,18 @@ namespace Entities.Post
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(p => p.User)
-                .WithMany(c => c.Comments)
-                .HasForeignKey(p => p.UserId)
+                .WithMany(c => c.AnswererComments)
+                .HasForeignKey(p => p.AnswererId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne(p => p.User)
+                .WithMany(c => c.StarterComments)
+                .HasForeignKey(p => p.CreatorId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasIndex(a => a.PostId).HasName("IX_Comment_PostId");
-            builder.HasIndex(a => a.UserId).HasName("IX_Comment_UserId");
+            builder.HasIndex(a => a.CreatorId).HasName("IX_Comment_CreatorId");
+            builder.HasIndex(a => a.AnswererId).HasName("IX_Comment_AnswererId");
         }
     }
 }
