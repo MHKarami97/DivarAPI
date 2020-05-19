@@ -9,6 +9,8 @@ namespace Entities.Problem
     {
         public int PostId { get; set; }
         public int ReasonId { get; set; }
+        public string Phone { get; set; }
+        public string Description { get; set; }
         public bool Status { get; set; }
         public DateTimeOffset Time { get; set; }
 
