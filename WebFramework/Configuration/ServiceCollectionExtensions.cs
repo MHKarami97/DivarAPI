@@ -28,12 +28,15 @@ namespace WebFramework.Configuration
 {
     public static class ServiceCollectionExtensions
     {
-        [Obsolete]
+        public static readonly ILoggerFactory MyLoggerFactory
+            = LoggerFactory.Create(builder => { builder.AddConsole(); });
+
         public static void AddDbContext(this IServiceCollection services, IConfiguration configuration, SiteSettings siteSetting)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options
+                    .UseLoggerFactory(MyLoggerFactory)
                     .UseSqlServer(configuration.GetConnectionString("SqlServer"),
                         sqlServerOptionsBuilder =>
                         {

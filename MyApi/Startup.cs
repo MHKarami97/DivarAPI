@@ -125,11 +125,17 @@ namespace MyApi
                 {
                     Predicate = _ => true,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-                }).RequireAuthorization("SuperAdminPolicy")
-                    .RequireCors(core =>
-                    {
-                        core.AllowAnyOrigin();
-                    });
+                });
+
+                // endpoints.MapHealthChecks("/health", new HealthCheckOptions
+                // {
+                //     Predicate = _ => true,
+                //     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                // }).RequireAuthorization("SuperAdminPolicy")
+                //     .RequireCors(core =>
+                //     {
+                //         core.AllowAnyOrigin();
+                //     });
             });
         }
     }

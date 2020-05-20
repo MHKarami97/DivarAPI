@@ -23,7 +23,7 @@ namespace Services.DataInitializer
                     Version = 1,
                     VersionStatus = 0,
                     Image = "img.png",
-                    ParentCategoryId = 0
+                    ParentCategoryId = null
                 });
             }
         }

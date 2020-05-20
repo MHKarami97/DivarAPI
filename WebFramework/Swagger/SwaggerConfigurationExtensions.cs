@@ -141,8 +141,8 @@ namespace WebFramework.Swagger
                     {
                         Password = new OpenApiOAuthFlow
                         {
-                            TokenUrl = new Uri("http://5.63.13.16/api/v1/users/Token"),
-                            //TokenUrl = new Uri("https://localhost:5001/api/v1/users/Token"),
+                            //TokenUrl = new Uri("http://5.63.13.16/api/v1/users/Token")
+                            TokenUrl = new Uri("https://localhost:5001/api/v1/users/Token")
                         }
                     }
                 });
