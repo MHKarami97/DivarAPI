@@ -2,11 +2,13 @@
 using Common;
 using Autofac;
 using AspNetCoreRateLimit;
+using HealthChecks.UI.Client;
 using WebFramework.Swagger;
 using WebFramework.Middlewares;
 using WebFramework.CustomMapping;
 using WebFramework.Configuration;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using OwaspHeaders.Core.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -62,6 +64,11 @@ namespace MyApi
 
             services.AddCronJob();
 
+            services.AddHealthChecks()
+                .AddSqlServer(Configuration.GetConnectionString("SqlServer"));
+
+            services.AddHealthChecksUI();
+
             services.AddSecondLevelCache(_siteSetting);
 
             services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"));
@@ -106,6 +113,23 @@ namespace MyApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+
+                endpoints.MapHealthChecks("/health/result")
+                    .RequireAuthorization("SuperAdminPolicy")
+                    .RequireCors(core =>
+                    {
+                        core.AllowAnyOrigin();
+                    });
+
+                endpoints.MapHealthChecks("/health", new HealthCheckOptions
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                }).RequireAuthorization("SuperAdminPolicy")
+                    .RequireCors(core =>
+                    {
+                        core.AllowAnyOrigin();
+                    });
             });
         }
     }

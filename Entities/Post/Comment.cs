@@ -15,6 +15,7 @@ namespace Entities.Post
 
         public Post Post { get; set; }
         public User.User User { get; set; }
+        public User.User UserAnswer { get; set; }
     }
 
     public class CommentConfiguration : IEntityTypeConfiguration<Comment>
@@ -31,7 +32,7 @@ namespace Entities.Post
                 .HasForeignKey(p => p.PostId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.HasOne(p => p.User)
+            builder.HasOne(p => p.UserAnswer)
                 .WithMany(c => c.AnswererComments)
                 .HasForeignKey(p => p.AnswererId)
                 .OnDelete(DeleteBehavior.NoAction);

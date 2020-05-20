@@ -41,7 +41,7 @@ namespace WebFramework.Configuration
                             sqlServerOptionsBuilder.EnableRetryOnFailure();
                         });
 
-                options.AddInterceptors(new SecondLevelCacheInterceptor());
+               // options.AddInterceptors(new SecondLevelCacheInterceptor());
 
                 //Tips
                 //.ConfigureWarnings(warning => warning.Throw(RelationalEventId.QueryClientEvaluationWarning));

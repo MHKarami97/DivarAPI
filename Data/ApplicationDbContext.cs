@@ -14,20 +14,20 @@ namespace Data
     public class ApplicationDbContext : IdentityDbContext<User, Role, int>
     //DbContext
     {
-        private readonly ILoggerFactory _loggerFactory;
+       // private readonly ILoggerFactory _loggerFactory;
 
-        public ApplicationDbContext(DbContextOptions options, ILoggerFactory loggerFactory)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-            _loggerFactory = loggerFactory;
+            //_loggerFactory = loggerFactory;
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
-            optionsBuilder.EnableSensitiveDataLogging();
-            optionsBuilder.UseLoggerFactory(_loggerFactory);
-        }
+        // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        // {
+        //     base.OnConfiguring(optionsBuilder);
+        //     optionsBuilder.EnableSensitiveDataLogging();
+        //     optionsBuilder.UseLoggerFactory(_loggerFactory);
+        // }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
