@@ -22,16 +22,8 @@ namespace Models.Models
         public string Text { get; set; }
 
         [Required]
-        [StringLength(500)]
         [DataType(DataType.Text)]
-        public string ShortDescription { get; set; }
-
-        [Required]
-        public int TimeToRead { get; set; }
-
-        [Required]
-        [DataType(DataType.ImageUrl)]
-        public string Image { get; set; }
+        public List<PostImageDto> Image { get; set; }
 
         [Required]
         public int CategoryId { get; set; }

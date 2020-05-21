@@ -23,13 +23,15 @@ namespace Repositories.Repositories
     public class PostRepository : Repository<Post>, IPostRepository, IScopedDependency, IBaseRepository
     {
         private readonly IRepository<Comment> _repositoryComment;
+        private readonly IRepository<PostImage> _repositoryImage;
         private readonly IRepository<View> _repositoryView;
 
-        public PostRepository(ApplicationDbContext dbContext, IMapper mapper, IRepository<Comment> repositoryComment, IRepository<View> repositoryView)
+        public PostRepository(ApplicationDbContext dbContext, IMapper mapper, IRepository<Comment> repositoryComment, IRepository<View> repositoryView, IRepository<PostImage> repositoryImage)
             : base(dbContext, mapper)
         {
             _repositoryComment = repositoryComment;
             _repositoryView = repositoryView;
+            _repositoryImage = repositoryImage;
         }
 
         public async Task<ApiResult<List<PostShortSelectDto>>> GetAllByCatId(CancellationToken cancellationToken, int id, int to = 0)
@@ -286,6 +288,26 @@ namespace Repositories.Repositories
                 .ToListAsync(cancellationToken);
 
             return list;
+        }
+
+        public async Task<int> AddImage(List<PostImageDto> images, int postId, CancellationToken cancellationToken)
+        {
+            Assert.NotNullArgument(images, "عکس ها خالی است");
+
+            foreach (var img in images)
+            {
+                await _repositoryImage.AddAsync(new PostImage
+                {
+                    Image = img.Name,
+                    PostId = postId,
+                    Version = 1,
+                    VersionStatus = 0
+                }, cancellationToken, false);
+            }
+
+            var result = await DbContext.SaveChangesAsync(cancellationToken);
+
+            return result;
         }
     }
 }

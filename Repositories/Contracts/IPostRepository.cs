@@ -21,5 +21,7 @@ namespace Repositories.Contracts
         Task<ApiResult<List<PostShortSelectDto>>> GetCustom(CancellationToken cancellationToken, int type, int dateType, int count);
 
         Task<ApiResult<List<PostShortSelectDto>>> Search(CancellationToken cancellationToken, string str);
+
+        Task<int> AddImage(List<PostImageDto> images, int postId, CancellationToken cancellationToken);
     }
 }

@@ -28,6 +28,7 @@ namespace MyApi.Controllers.v1
         private readonly IRepository<Favorite> _repositoryFavorite;
         private readonly ViewsController _viewsController;
 
+
         public PostsController(IRepository<Post> repository, IMapper mapper, UserManager<User> userManager, IRepository<PostTag> repositoryTag, IRepository<Favorite> repositoryFavorite, ViewsController viewsController, IPostRepository postRepository)
             : base(repository, mapper)
         {
@@ -112,16 +113,18 @@ namespace MyApi.Controllers.v1
             return base.Delete(id, cancellationToken);
         }
 
-        public override Task<ApiResult<PostSelectDto>> Create(PostDto dto, CancellationToken cancellationToken)
+        public override async Task<ApiResult<PostSelectDto>> Create(PostDto dto, CancellationToken cancellationToken)
         {
             dto.UserId = HttpContext.User.Identity.GetUserId<int>();
 
-            //dto.Time = DateTimeOffset.Now;
-            //dto.Text = dto.Text.FixPersianChars();
-            //dto.Title = dto.Title.FixPersianChars();
-            //dto.ShortDescription = dto.ShortDescription.FixPersianChars();
+            var result = await base.Create(dto, cancellationToken);
 
-            return base.Create(dto, cancellationToken);
+            var imgResult = await _postRepository
+                .AddImage(dto.Image, result.Data.Id, cancellationToken);
+
+            return !imgResult.Equals(1)
+                ? BadRequest("در ذخیره عکس ها مشکل بوجود آمد")
+                : result;
         }
 
         [AllowAnonymous]
