@@ -39,7 +39,7 @@ namespace MyApi.Controllers.v1
             _postRepository = postRepository;
         }
 
-        [NonAction]
+        [Authorize(Policy = "SuperAdminPolicy")]
         public override Task<ApiResult<List<PostSelectDto>>> Get(CancellationToken cancellationToken)
         {
             return base.Get(cancellationToken);
@@ -167,6 +167,13 @@ namespace MyApi.Controllers.v1
         public virtual async Task<ApiResult<List<PostShortSelectDto>>> Search(string str, CancellationToken cancellationToken)
         {
             return await _postRepository.Search(cancellationToken, str);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public virtual async Task<ApiResult<List<PostShortSelectDto>>> GetShort(CancellationToken cancellationToken)
+        {
+            return await _postRepository.GetShort(cancellationToken);
         }
     }
 }

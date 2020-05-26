@@ -57,6 +57,7 @@ namespace Models.Models
         public string StateName { get; set; }
         public string Time { get; set; }
         public string Image { get; set; }
+        public long Price { get; set; }
 
         public override void CustomMappings(IMappingExpression<Post, PostShortSelectDto> mappingExpression)
         {

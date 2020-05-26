@@ -290,6 +290,18 @@ namespace Repositories.Repositories
             return list;
         }
 
+        public async Task<ApiResult<List<PostShortSelectDto>>> GetShort(CancellationToken cancellationToken)
+        {
+            var list = await TableNoTracking
+                .Where(a => !a.VersionStatus.Equals(2) && a.IsConfirm)
+                .OrderByDescending(a => a.Time)
+                .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
+                .Take(DefaultTake)
+                .ToListAsync(cancellationToken);
+
+            return list;
+        }
+
         public async Task<int> AddImage(List<PostImageDto> images, int postId, CancellationToken cancellationToken)
         {
             Assert.NotNullArgument(images, "عکس ها خالی است");
