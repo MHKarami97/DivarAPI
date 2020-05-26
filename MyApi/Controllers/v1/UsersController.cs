@@ -176,20 +176,17 @@ namespace MyApi.Controllers.v1
 
         [HttpPost]
         [AllowAnonymous]
-        public virtual async Task<ApiResult<AccessToken>> TokenByBody(TokenRequest tokenBodyRequest, CancellationToken cancellationToken)
+        public virtual async Task<ApiResult<AccessToken>> TokenByBody(LoginRequest tokenBodyRequest, CancellationToken cancellationToken)
         {
-            if (!tokenBodyRequest.Grant_type.Equals("password", StringComparison.OrdinalIgnoreCase))
-                throw new DataException("OAuth flow is not password.");
-
             //Prevent Brute Force Attack
             await Task.Delay(_security.RandomNumber(1, 2), cancellationToken);
 
-            var user = await _userManager.FindByNameAsync(tokenBodyRequest.Username);
+            var user = await _userManager.FindByEmailAsync(tokenBodyRequest.Email);
             if (user == null)
             {
-                _logger.LogError("نام کاربری اشتباه");
+                _logger.LogError("ایمیل اشتباه");
 
-                throw new DataException("نام کاربری یا رمز عبور اشتباه است");
+                throw new DataException("ایمیل یا رمز عبور اشتباه است");
             }
 
             if (user.LockoutEnabled && user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.Now)
@@ -203,14 +200,17 @@ namespace MyApi.Controllers.v1
                 await _userRepository.DisableLockout(user, cancellationToken);
 
             var isPasswordValid = await _userManager.CheckPasswordAsync(user, tokenBodyRequest.Password);
-            if (!isPasswordValid)
+            if (!isPasswordValid || string.IsNullOrEmpty(tokenBodyRequest.Password))
             {
                 await _userRepository.LockoutIncrease(user, cancellationToken);
 
                 _logger.LogError("رمز عبور اشتباه");
 
-                throw new DataException("نام کاربری یا رمز عبور اشتباه است");
+                throw new DataException("ایمیل یا رمز عبور اشتباه است");
             }
+
+            if (!user.IsActive)
+                throw new DataException("حساب شما قفل شده است");
 
             await _userRepository.UpdateSecurityStampAsync(user, cancellationToken);
 

@@ -13,4 +13,13 @@ namespace Models.Models
         public string Client_id { get; set; }
         public string Client_secret { get; set; }
     }
+
+    public class LoginRequest
+    {
+        [Required]
+        public string Email { get; set; }
+
+        [Required]
+        public string Password { get; set; }
+    }
 }
