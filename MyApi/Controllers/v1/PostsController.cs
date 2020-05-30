@@ -28,7 +28,6 @@ namespace MyApi.Controllers.v1
         private readonly IRepository<Favorite> _repositoryFavorite;
         private readonly ViewsController _viewsController;
 
-
         public PostsController(IRepository<Post> repository, IMapper mapper, UserManager<User> userManager, IRepository<PostTag> repositoryTag, IRepository<Favorite> repositoryFavorite, ViewsController viewsController, IPostRepository postRepository)
             : base(repository, mapper)
         {
@@ -167,6 +166,13 @@ namespace MyApi.Controllers.v1
         public virtual async Task<ApiResult<List<PostShortSelectDto>>> Search(string str, CancellationToken cancellationToken)
         {
             return await _postRepository.Search(cancellationToken, str);
+        }
+
+        [HttpGet]
+        [Authorize(Policy = "WorkerPolicy")]
+        public virtual async Task<ApiResult<List<PostShortStatusSelectDto>>> GetByStatus(CancellationToken cancellationToken, bool status = true)
+        {
+            return await _postRepository.GetByStatus(cancellationToken, status);
         }
 
         [HttpGet]

@@ -290,6 +290,18 @@ namespace Repositories.Repositories
             return list;
         }
 
+        public async Task<ApiResult<List<PostShortStatusSelectDto>>> GetByStatus(CancellationToken cancellationToken, bool status)
+        {
+            var list = await TableNoTracking
+                .Where(a => !a.VersionStatus.Equals(2) && a.IsConfirm.Equals(status))
+                .OrderByDescending(a => a.Time)
+                .ProjectTo<PostShortStatusSelectDto>(Mapper.ConfigurationProvider)
+                .Take(DefaultTake)
+                .ToListAsync(cancellationToken);
+
+            return list;
+        }
+
         public async Task<ApiResult<List<PostShortSelectDto>>> GetShort(CancellationToken cancellationToken)
         {
             var list = await TableNoTracking
