@@ -22,7 +22,7 @@ namespace Repositories.Repositories
         {
         }
 
-        public async Task<ApiResult<List<StateDto>>> GetAllMainCat(CancellationToken cancellationToken)
+        public async Task<ApiResult<List<StateDto>>> GetAllMainState(CancellationToken cancellationToken)
         {
             var list = await TableNoTracking
                 .Where(a => !a.VersionStatus.Equals(2) && a.ParentStateId.Equals(0) || a.ParentStateId == null)
@@ -32,7 +32,7 @@ namespace Repositories.Repositories
             return list;
         }
 
-        public async Task<ApiResult<List<StateWithSubCatDto>>> GetCategoryWithSub(CancellationToken cancellationToken)
+        public async Task<ApiResult<List<StateWithSubCatDto>>> GetStateWithSub(CancellationToken cancellationToken)
         {
             var list = await TableNoTracking
                 .Where(a => !a.VersionStatus.Equals(2) && a.ParentStateId.Equals(0) || a.ParentStateId == null)
@@ -43,7 +43,7 @@ namespace Repositories.Repositories
             return list;
         }
 
-        public async Task<ApiResult<List<StateDto>>> GetAllByCatId(int id, CancellationToken cancellationToken)
+        public async Task<ApiResult<List<StateDto>>> GetAllByStateId(int id, CancellationToken cancellationToken)
         {
             var list = await TableNoTracking
                 .Where(a => !a.VersionStatus.Equals(2) && a.ParentStateId.Equals(id))

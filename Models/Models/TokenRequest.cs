@@ -2,7 +2,7 @@
 
 namespace Models.Models
 {
-    public class TokenRequest
+    public class TokenResult
     {
         [Required]
         public string Grant_type { get; set; }

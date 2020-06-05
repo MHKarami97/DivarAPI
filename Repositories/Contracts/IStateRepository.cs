@@ -10,10 +10,10 @@ namespace Repositories.Contracts
 {
     public interface IStateRepository : IRepository<State>
     {
-        Task<ApiResult<List<StateDto>>> GetAllMainCat(CancellationToken cancellationToken);
+        Task<ApiResult<List<StateDto>>> GetAllMainState(CancellationToken cancellationToken);
 
-        Task<ApiResult<List<StateWithSubCatDto>>> GetCategoryWithSub(CancellationToken cancellationToken);
+        Task<ApiResult<List<StateWithSubCatDto>>> GetStateWithSub(CancellationToken cancellationToken);
 
-        Task<ApiResult<List<StateDto>>> GetAllByCatId(int id, CancellationToken cancellationToken);
+        Task<ApiResult<List<StateDto>>> GetAllByStateId(int id, CancellationToken cancellationToken);
     }
 }

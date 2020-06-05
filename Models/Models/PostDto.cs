@@ -2,6 +2,7 @@
 using AutoMapper;
 using Models.Base;
 using Entities.Post;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
@@ -21,9 +22,7 @@ namespace Models.Models
         [DataType(DataType.Html)]
         public string Text { get; set; }
 
-        [Required]
-        [DataType(DataType.Text)]
-        public List<PostImageDto> Image { get; set; }
+        public List<IFormFile> Image { get; set; }
 
         [Required]
         public int CategoryId { get; set; }
@@ -37,8 +36,7 @@ namespace Models.Models
         [JsonIgnore]
         public int UserId { get; set; }
 
-        [Required]
-        public long Price { get; set; }
+        public long? Price { get; set; }
 
         [JsonIgnore]
         public bool IsConfirm { get; set; }

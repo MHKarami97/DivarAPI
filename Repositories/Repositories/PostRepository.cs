@@ -314,7 +314,7 @@ namespace Repositories.Repositories
             return list;
         }
 
-        public async Task<int> AddImage(List<PostImageDto> images, int postId, CancellationToken cancellationToken)
+        public async Task<int> AddImage(List<string> images, int postId, CancellationToken cancellationToken)
         {
             Assert.NotNullArgument(images, "عکس ها خالی است");
 
@@ -322,7 +322,7 @@ namespace Repositories.Repositories
             {
                 await _repositoryImage.AddAsync(new PostImage
                 {
-                    Image = img.Name,
+                    Image = img,
                     PostId = postId,
                     Version = 1,
                     VersionStatus = 0

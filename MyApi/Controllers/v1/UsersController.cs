@@ -131,7 +131,7 @@ namespace MyApi.Controllers.v1
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public virtual async Task<ActionResult> Token([FromForm]TokenRequest tokenRequest, CancellationToken cancellationToken)
+        public virtual async Task<ActionResult> Token([FromForm]TokenResult tokenRequest, CancellationToken cancellationToken)
         {
             if (!tokenRequest.Grant_type.Equals("password", StringComparison.OrdinalIgnoreCase))
                 throw new DataException("OAuth flow is not password.");
@@ -293,7 +293,7 @@ namespace MyApi.Controllers.v1
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> RefreshToken([FromForm]TokenRequest tokenRequest, [FromBody]TokenRequest tokenBodyRequest)
+        public async Task<IActionResult> RefreshToken([FromForm]TokenResult tokenRequest, [FromBody]TokenResult tokenBodyRequest)
         {
             if (tokenBodyRequest != null)
             {

@@ -68,23 +68,23 @@ namespace MyApi.Controllers.v1
 
         [HttpGet]
         [AllowAnonymous]
-        public virtual async Task<ApiResult<List<StateDto>>> GetAllMainCat(CancellationToken cancellationToken)
+        public virtual async Task<ApiResult<List<StateDto>>> GetAllMainState(CancellationToken cancellationToken)
         {
-            return await _stateRepository.GetAllMainCat(cancellationToken);
+            return await _stateRepository.GetAllMainState(cancellationToken);
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public virtual async Task<ApiResult<List<StateWithSubCatDto>>> GetCategoryWithSub(CancellationToken cancellationToken)
+        public virtual async Task<ApiResult<List<StateWithSubCatDto>>> GetStateWithSub(CancellationToken cancellationToken)
         {
-            return await _stateRepository.GetCategoryWithSub(cancellationToken);
+            return await _stateRepository.GetStateWithSub(cancellationToken);
         }
 
         [AllowAnonymous]
         [HttpGet("{id:int}")]
-        public virtual async Task<ApiResult<List<StateDto>>> GetAllByCatId(int id, CancellationToken cancellationToken)
+        public virtual async Task<ApiResult<List<StateDto>>> GetAllByStateId(int id, CancellationToken cancellationToken)
         {
-            return await _stateRepository.GetAllByCatId(id, cancellationToken);
+            return await _stateRepository.GetAllByStateId(id, cancellationToken);
         }
     }
 }

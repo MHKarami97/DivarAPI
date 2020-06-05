@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Models.Base;
+using Models.More;
 using Services.Security;
 using System.Collections.Generic;
 using System.IO;
@@ -56,9 +58,64 @@ namespace MyApi.Controllers.v1
                 result.Add(address);
             }
 
-
-
             return Ok(result);
+        }
+
+        [Authorize]
+        [RequestSizeLimit(900_000)]
+        public UploadResult Upload(List<IFormFile> files)
+        {
+            var result = new List<string>();
+
+            foreach (var file in files)
+            {
+                switch (_security.ImageCheck(file))
+                {
+                    case 0:
+                        break;
+
+                    case 1:
+                        return new UploadResult
+                        {
+                            Images = null,
+                            Message = "فایل نامعتبر است",
+                            Status = false
+                        };
+
+                    case 2:
+                        return new UploadResult
+                        {
+                            Images = null,
+                            Message = "فرمت فایل نامعتبر است",
+                            Status = false
+                        };
+
+                    case 3:
+                        return new UploadResult
+                        {
+                            Images = null,
+                            Message = "حداکثر حجم فایل نامعتبر است",
+                            Status = false
+                        };
+                }
+
+                var uploads = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads");
+
+                var address = _security.GetUniqueFileName(file.FileName);
+
+                var fullPath = Path.Combine(uploads, address);
+
+                file.CopyTo(new FileStream(fullPath, FileMode.Create));
+
+                result.Add(address);
+            }
+
+            return new UploadResult
+            {
+                Images = result,
+                Message = "ok",
+                Status = true
+            };
         }
     }
 }

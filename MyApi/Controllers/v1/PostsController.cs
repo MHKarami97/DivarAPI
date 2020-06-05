@@ -27,8 +27,9 @@ namespace MyApi.Controllers.v1
         private readonly IRepository<PostTag> _repositoryTag;
         private readonly IRepository<Favorite> _repositoryFavorite;
         private readonly ViewsController _viewsController;
+        private readonly FilesController _filesController;
 
-        public PostsController(IRepository<Post> repository, IMapper mapper, UserManager<User> userManager, IRepository<PostTag> repositoryTag, IRepository<Favorite> repositoryFavorite, ViewsController viewsController, IPostRepository postRepository)
+        public PostsController(IRepository<Post> repository, IMapper mapper, UserManager<User> userManager, IRepository<PostTag> repositoryTag, IRepository<Favorite> repositoryFavorite, ViewsController viewsController, IPostRepository postRepository, FilesController filesController)
             : base(repository, mapper)
         {
             _userManager = userManager;
@@ -36,6 +37,7 @@ namespace MyApi.Controllers.v1
             _repositoryFavorite = repositoryFavorite;
             _viewsController = viewsController;
             _postRepository = postRepository;
+            _filesController = filesController;
         }
 
         [Authorize(Policy = "SuperAdminPolicy")]
@@ -112,18 +114,23 @@ namespace MyApi.Controllers.v1
             return base.Delete(id, cancellationToken);
         }
 
+        [Authorize]
+        [RequestSizeLimit(900_000)]
         public override async Task<ApiResult<PostSelectDto>> Create(PostDto dto, CancellationToken cancellationToken)
         {
             dto.UserId = HttpContext.User.Identity.GetUserId<int>();
 
             var result = await base.Create(dto, cancellationToken);
 
-            var imgResult = await _postRepository
-                .AddImage(dto.Image, result.Data.Id, cancellationToken);
+            var imgResult = _filesController.Upload(dto.Image);
 
-            return !imgResult.Equals(1)
-                ? BadRequest("در ذخیره عکس ها مشکل بوجود آمد")
-                : result;
+            if (!imgResult.Status)
+                return BadRequest(imgResult.Message);
+
+            var imgSaveResult = await _postRepository
+                .AddImage(imgResult.Images, result.Data.Id, cancellationToken);
+
+            return imgSaveResult != 1 ? BadRequest("مشکل در ذخیره عکس ها") : result;
         }
 
         [AllowAnonymous]

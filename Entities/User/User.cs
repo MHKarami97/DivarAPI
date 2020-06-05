@@ -17,8 +17,8 @@ namespace Entities.User
         }
 
         public string FullName { get; set; }
-        public DateTime Birthday { get; set; }
-        public GenderType Gender { get; set; }
+        public DateTime? Birthday { get; set; }
+        public GenderType? Gender { get; set; }
         public bool IsActive { get; set; }
         public int? VerifyCode { get; set; }
         public DateTimeOffset? LastLoginDate { get; set; }
@@ -35,7 +35,7 @@ namespace Entities.User
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.Property(p => p.UserName).IsRequired().HasMaxLength(100);
+            builder.Property(p => p.UserName).HasMaxLength(100);
         }
     }
 
