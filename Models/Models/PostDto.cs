@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Models.Models
 {
@@ -22,7 +23,8 @@ namespace Models.Models
         [DataType(DataType.Html)]
         public string Text { get; set; }
 
-        public List<IFormFile> Image { get; set; }
+        // [AllowNull]
+        // public List<IFormFile> Image { get; set; }
 
         [Required]
         public int CategoryId { get; set; }
@@ -37,6 +39,8 @@ namespace Models.Models
         public int UserId { get; set; }
 
         public long? Price { get; set; }
+
+        public int Type { get; set; }
 
         [JsonIgnore]
         public bool IsConfirm { get; set; }
@@ -80,7 +84,7 @@ namespace Models.Models
         public string Time { get; set; }
         public string Location { get; set; }
         public string Phone { get; set; }
-        public List<PostImage> Images { get; set; }
+        public List<PostImageDto> Images { get; set; }
         public long Price { get; set; }
 
         [IgnoreMap]

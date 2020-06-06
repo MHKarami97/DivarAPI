@@ -61,9 +61,10 @@ namespace MyApi.Controllers.v1
             return Ok(result);
         }
 
+        [HttpGet]
         [Authorize]
-        [RequestSizeLimit(900_000)]
-        public UploadResult Upload(List<IFormFile> files)
+        [RequestSizeLimit(900_000_000)]
+        public UploadResult Upload(IFormFileCollection files)
         {
             var result = new List<string>();
 

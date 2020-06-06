@@ -114,15 +114,21 @@ namespace MyApi.Controllers.v1
             return base.Delete(id, cancellationToken);
         }
 
+        [HttpPost]
         [Authorize]
-        [RequestSizeLimit(900_000)]
-        public override async Task<ApiResult<PostSelectDto>> Create(PostDto dto, CancellationToken cancellationToken)
+        [RequestSizeLimit(900_000_000)]
+        public override async Task<ApiResult<PostSelectDto>> Create([FromForm]PostDto dto, CancellationToken cancellationToken)
         {
             dto.UserId = HttpContext.User.Identity.GetUserId<int>();
 
             var result = await base.Create(dto, cancellationToken);
 
-            var imgResult = _filesController.Upload(dto.Image);
+            var files = Request.Form.Files;
+
+            if (files == null)
+                return result;
+
+            var imgResult = _filesController.Upload(files);
 
             if (!imgResult.Status)
                 return BadRequest(imgResult.Message);
