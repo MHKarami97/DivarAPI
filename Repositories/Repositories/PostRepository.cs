@@ -281,7 +281,8 @@ namespace Repositories.Repositories
             Assert.NotNullArgument(str, "کلمه مورد جستجو نامعتبر است");
 
             var list = await TableNoTracking
-                .Where(a => !a.VersionStatus.Equals(2) && a.Title.Contains(str))
+                .Where(a => !a.VersionStatus.Equals(2) &&
+                            EF.Functions.Contains(a.Title, str))
                 .OrderByDescending(a => a.Time)
                 .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
                 .Take(DefaultTake)
@@ -307,7 +308,7 @@ namespace Repositories.Repositories
             var list = await TableNoTracking
                 .Where(a => !a.VersionStatus.Equals(2) && a.IsConfirm)
                 .OrderByDescending(a => a.Time)
-                .Include(a=>a.Images)
+                .Include(a => a.Images)
                 .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
                 .Take(DefaultTake)
                 .ToListAsync(cancellationToken);
