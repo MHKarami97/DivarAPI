@@ -5,6 +5,6 @@ namespace Models.Models
 {
     public class PostImageDto : BaseDto<PostImageDto, PostImage>
     {
-        public string Name { get; set; }
+        public string Image { get; set; }
     }
 }

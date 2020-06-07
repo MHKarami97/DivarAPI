@@ -24,16 +24,16 @@ namespace MyApi.Controllers.v1
     {
         private readonly IPostRepository _postRepository;
         private readonly UserManager<User> _userManager;
-        private readonly IRepository<PostTag> _repositoryTag;
+        private readonly IRepository<PostImage> _repositoryPostImage;
         private readonly IRepository<Favorite> _repositoryFavorite;
         private readonly ViewsController _viewsController;
         private readonly FilesController _filesController;
 
-        public PostsController(IRepository<Post> repository, IMapper mapper, UserManager<User> userManager, IRepository<PostTag> repositoryTag, IRepository<Favorite> repositoryFavorite, ViewsController viewsController, IPostRepository postRepository, FilesController filesController)
+        public PostsController(IRepository<Post> repository, IMapper mapper, UserManager<User> userManager, IRepository<PostImage> repositoryImage, IRepository<Favorite> repositoryFavorite, ViewsController viewsController, IPostRepository postRepository, FilesController filesController)
             : base(repository, mapper)
         {
             _userManager = userManager;
-            _repositoryTag = repositoryTag;
+            _repositoryPostImage = repositoryImage;
             _repositoryFavorite = repositoryFavorite;
             _viewsController = viewsController;
             _postRepository = postRepository;
@@ -70,14 +70,12 @@ namespace MyApi.Controllers.v1
                 isAuthorize = true;
             }
 
-            var tags = await _repositoryTag.TableNoTracking
+            var images = await _repositoryPostImage.TableNoTracking
             .Where(a => !a.VersionStatus.Equals(2) && a.PostId.Equals(result.Data.Id))
-            .Include(a => a.Tag)
-            .Select(a => a.Tag)
-            .ProjectTo<TagDto>(Mapper.ConfigurationProvider)
+            .ProjectTo<PostImageDto>(Mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
-            result.Data.Tags = tags;
+            result.Data.Images = images;
 
             await _viewsController.IncreaseView(id, isAuthorize, cancellationToken);
 
@@ -117,7 +115,7 @@ namespace MyApi.Controllers.v1
         [HttpPost]
         [Authorize]
         [RequestSizeLimit(900_000_000)]
-        public override async Task<ApiResult<PostSelectDto>> Create([FromForm]PostDto dto, CancellationToken cancellationToken)
+        public override async Task<ApiResult<PostSelectDto>> Create([FromForm] PostDto dto, CancellationToken cancellationToken)
         {
             dto.UserId = HttpContext.User.Identity.GetUserId<int>();
 

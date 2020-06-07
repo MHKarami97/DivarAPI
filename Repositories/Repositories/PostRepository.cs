@@ -307,6 +307,7 @@ namespace Repositories.Repositories
             var list = await TableNoTracking
                 .Where(a => !a.VersionStatus.Equals(2) && a.IsConfirm)
                 .OrderByDescending(a => a.Time)
+                .Include(a=>a.Images)
                 .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
                 .Take(DefaultTake)
                 .ToListAsync(cancellationToken);

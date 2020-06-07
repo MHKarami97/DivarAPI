@@ -58,7 +58,7 @@ namespace Models.Models
         public string CategoryName { get; set; }
         public string StateName { get; set; }
         public string Time { get; set; }
-        public string Image { get; set; }
+        public List<PostImageDto> Images { get; set; }
         public long Price { get; set; }
         public int Type { get; set; }
 
