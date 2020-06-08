@@ -60,11 +60,11 @@ namespace MyApi
                     webBuilder.UseContentRoot(Directory.GetCurrentDirectory())
                         .UseIISIntegration()
                         //use in cmd mode, not iis express
-                        .UseKestrel(c =>
-                        {
-                            c.AddServerHeader = false;
-                            c.Limits.MaxResponseBufferSize = 52428800; //50MB
-                        })
+                        //.UseKestrel(c =>
+                        //{
+                        //    c.AddServerHeader = false;
+                        //    c.Limits.MaxResponseBufferSize = 52428800; //50MB
+                        //})
                         //.UseIISIntegration()
                         .UseStartup<Startup>();
                 });
