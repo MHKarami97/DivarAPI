@@ -65,6 +65,7 @@ namespace MyApi
                             c.AddServerHeader = false;
                             c.Limits.MaxResponseBufferSize = 52428800; //50MB
                         })
+                        //.UseIISIntegration()
                         .UseStartup<Startup>();
                 });
     }

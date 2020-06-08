@@ -64,10 +64,10 @@ namespace MyApi
 
             services.AddCronJob();
 
-            services.AddHealthChecks()
-                .AddSqlServer(Configuration.GetConnectionString("SqlServer"));
+            //services.AddHealthChecks()
+            //    .AddSqlServer(Configuration.GetConnectionString("SqlServer"));
 
-            services.AddHealthChecksUI();
+            //services.AddHealthChecksUI();
 
             services.AddSecondLevelCache(_siteSetting);
 
@@ -114,18 +114,18 @@ namespace MyApi
             {
                 endpoints.MapControllers();
 
-                endpoints.MapHealthChecks("/health/result")
-                    .RequireAuthorization("SuperAdminPolicy")
-                    .RequireCors(core =>
-                    {
-                        core.AllowAnyOrigin();
-                    });
+                //endpoints.MapHealthChecks("/health/result")
+                //    .RequireAuthorization("SuperAdminPolicy")
+                //    .RequireCors(core =>
+                //    {
+                //        core.AllowAnyOrigin();
+                //    });
 
-                endpoints.MapHealthChecks("/health", new HealthCheckOptions
-                {
-                    Predicate = _ => true,
-                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-                });
+                //endpoints.MapHealthChecks("/health", new HealthCheckOptions
+                //{
+                //    Predicate = _ => true,
+                //    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                //});
 
                 // endpoints.MapHealthChecks("/health", new HealthCheckOptions
                 // {
