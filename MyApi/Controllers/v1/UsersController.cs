@@ -131,7 +131,7 @@ namespace MyApi.Controllers.v1
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public virtual async Task<ActionResult> Token([FromForm]TokenResult tokenRequest, CancellationToken cancellationToken)
+        public virtual async Task<ActionResult> Token([FromForm] TokenResult tokenRequest, CancellationToken cancellationToken)
         {
             if (!tokenRequest.Grant_type.Equals("password", StringComparison.OrdinalIgnoreCase))
                 throw new DataException("OAuth flow is not password.");
@@ -293,7 +293,7 @@ namespace MyApi.Controllers.v1
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> RefreshToken([FromForm]TokenResult tokenRequest, [FromBody]TokenResult tokenBodyRequest)
+        public async Task<IActionResult> RefreshToken([FromForm] TokenResult tokenRequest, [FromBody] TokenResult tokenBodyRequest)
         {
             if (tokenBodyRequest != null)
             {
@@ -356,12 +356,8 @@ namespace MyApi.Controllers.v1
 
             var user = new User
             {
-                Birthday = userDto.Birthday,
-                FullName = userDto.FullName.ToLower(),
-                Gender = userDto.Gender,
-                UserName = userDto.UserName.ToLower(),
-                Email = _security.EmailChecker(userDto.Email),
-                PhoneNumber = userDto.PhoneNumber.Fa2En()
+                UserName = userDto.Email.Split("@")[0],
+                Email = userDto.Email
             };
 
             var result = await _userManager.CreateAsync(user, userDto.Password);

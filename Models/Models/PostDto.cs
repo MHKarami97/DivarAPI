@@ -84,14 +84,13 @@ namespace Models.Models
         public string Time { get; set; }
         public string Location { get; set; }
         public string Phone { get; set; }
-        public List<PostImageDto> Images { get; set; }
         public long Price { get; set; }
+        public string Text { get; set; }
+        public int Type { get; set; }
+        public List<PostImageDto> Images { get; set; }
 
         [IgnoreMap]
         public bool IsFavorite { get; set; }
-
-        [IgnoreMap]
-        public List<TagDto> Tags { get; set; }
 
         public override void CustomMappings(IMappingExpression<Post, PostSelectDto> mappingExpression)
         {

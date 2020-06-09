@@ -29,7 +29,7 @@ namespace Data.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserName = table.Column<string>(maxLength: 100, nullable: false),
+                    UserName = table.Column<string>(maxLength: 100, nullable: true),
                     NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
                     Email = table.Column<string>(maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
@@ -44,8 +44,8 @@ namespace Data.Migrations
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
                     FullName = table.Column<string>(nullable: true),
-                    Birthday = table.Column<DateTime>(nullable: false),
-                    Gender = table.Column<int>(nullable: false),
+                    Birthday = table.Column<DateTime>(nullable: true),
+                    Gender = table.Column<int>(nullable: true),
                     IsActive = table.Column<bool>(nullable: false),
                     VerifyCode = table.Column<int>(nullable: true),
                     LastLoginDate = table.Column<DateTimeOffset>(nullable: true)

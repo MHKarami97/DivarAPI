@@ -2,6 +2,7 @@
 using Common.Utilities;
 using Entities.Contact;
 using Entities.Post;
+using Entities.User;
 using Models.Models;
 using System;
 
@@ -60,6 +61,16 @@ namespace Models.CustomMapping
                 .ForMember(dest => dest.Text,
                     opt =>
                         opt.MapFrom(src => src.Text.FixPersianChars()));
+        }
+    }
+
+    public class UserCustomMapping : IHaveCustomMapping
+    {
+        public void CreateMappings(Profile profile)
+        {
+            profile.CreateMap<User, UserShortReturnDto>().ReverseMap();
+
+            profile.CreateMap<User, UserReturnDto>().ReverseMap();
         }
     }
 }
