@@ -186,6 +186,15 @@ namespace MyApi.Controllers.v1
             return await _postRepository.GetByStatus(cancellationToken, status);
         }
 
+        [HttpPost]
+        [Authorize(Policy = "WorkerPolicy")]
+        public virtual async Task<ApiResult<OkResult>> ChangeStatus(CancellationToken cancellationToken, int id)
+        {
+            var result = await _postRepository.ChangeStatus(cancellationToken, id);
+
+            return Ok($"وضعیت با موفقیت تغییر کرد {result}");
+        }
+
         [HttpGet]
         [AllowAnonymous]
         public virtual async Task<ApiResult<List<PostShortSelectDto>>> GetShort(CancellationToken cancellationToken)

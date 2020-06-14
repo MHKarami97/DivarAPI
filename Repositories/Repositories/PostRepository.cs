@@ -12,6 +12,7 @@ using Data.Contracts;
 using Data.Repositories;
 using Entities.Post;
 using Entities.User;
+using Microsoft.AspNetCore.Mvc;
 using Models.Base;
 using Models.Models;
 using Repositories.Contracts;
@@ -314,6 +315,20 @@ namespace Repositories.Repositories
                 .ToListAsync(cancellationToken);
 
             return list;
+        }
+
+        public async Task<bool> ChangeStatus(CancellationToken cancellationToken, int id)
+        {
+            var item = await TableNoTracking
+                .Where(a => !a.VersionStatus.Equals(2) && a.Id.Equals(id))
+                .Take(DefaultTake)
+                .SingleAsync(cancellationToken);
+
+            item.IsConfirm = item.IsConfirm;
+
+            await UpdateAsync(item, cancellationToken);
+
+            return true;
         }
 
         public async Task<int> AddImage(List<string> images, int postId, CancellationToken cancellationToken)

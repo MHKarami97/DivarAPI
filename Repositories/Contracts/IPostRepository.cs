@@ -27,5 +27,7 @@ namespace Repositories.Contracts
         Task<ApiResult<List<PostShortSelectDto>>> GetShort(CancellationToken cancellationToken);
 
         Task<int> AddImage(List<string> images, int postId, CancellationToken cancellationToken);
+
+        Task<bool> ChangeStatus(CancellationToken cancellationToken, int id);
     }
 }
