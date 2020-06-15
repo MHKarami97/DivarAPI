@@ -83,6 +83,19 @@ namespace Repositories.Repositories
             return list;
         }
 
+        public async Task<ApiResult<List<PostShortSelectDto>>> GetBySubStateId(CancellationToken cancellationToken, int id)
+        {
+            var list = await TableNoTracking
+                .Include(a => a.State)
+                .Where(a => !a.VersionStatus.Equals(2) &&
+                            a.State.ParentStateId.Equals(id) && a.IsConfirm)
+                .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
+                .Take(DefaultTake)
+                .ToListAsync(cancellationToken);
+
+            return list;
+        }
+
         public async Task<ApiResult<List<ViewShortDto>>> GetView(CancellationToken cancellationToken, int id)
         {
             var result = await _repositoryView.TableNoTracking
