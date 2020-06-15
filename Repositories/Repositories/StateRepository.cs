@@ -43,6 +43,17 @@ namespace Repositories.Repositories
             return list;
         }
 
+        public async Task<ApiResult<List<ShortStateDto>>> GetSubState(CancellationToken cancellationToken)
+        {
+            var list = await TableNoTracking
+                .Where(a => !a.VersionStatus.Equals(2) && a.ParentStateId != null)
+                .ProjectTo<ShortStateDto>(Mapper.ConfigurationProvider)
+                .ToListAsync(cancellationToken);
+
+            return list;
+        }
+
+
         public async Task<ApiResult<List<StateDto>>> GetAllByStateId(int id, CancellationToken cancellationToken)
         {
             var list = await TableNoTracking

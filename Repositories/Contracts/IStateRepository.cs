@@ -14,6 +14,8 @@ namespace Repositories.Contracts
 
         Task<ApiResult<List<StateWithSubCatDto>>> GetStateWithSub(CancellationToken cancellationToken);
 
+        Task<ApiResult<List<ShortStateDto>>> GetSubState(CancellationToken cancellationToken);
+        
         Task<ApiResult<List<StateDto>>> GetAllByStateId(int id, CancellationToken cancellationToken);
     }
 }

@@ -80,6 +80,13 @@ namespace MyApi.Controllers.v1
             return await _stateRepository.GetStateWithSub(cancellationToken);
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public virtual async Task<ApiResult<List<ShortStateDto>>> GetSubState(CancellationToken cancellationToken)
+        {
+            return await _stateRepository.GetSubState(cancellationToken);
+        }
+
         [AllowAnonymous]
         [HttpGet("{id:int}")]
         public virtual async Task<ApiResult<List<StateDto>>> GetAllByStateId(int id, CancellationToken cancellationToken)

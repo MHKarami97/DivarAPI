@@ -38,7 +38,7 @@ namespace Repositories.Repositories
         public async Task<ApiResult<List<PostShortSelectDto>>> GetAllByCatId(CancellationToken cancellationToken, int id, int to = 0)
         {
             var list = await TableNoTracking
-                .Where(a => !a.VersionStatus.Equals(2) && a.CategoryId.Equals(id))
+                .Where(a => !a.VersionStatus.Equals(2) && a.CategoryId.Equals(id) && a.IsConfirm)
                 .OrderByDescending(a => a.Time)
                 .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
                 .Take(DefaultTake + to)
@@ -54,7 +54,7 @@ namespace Repositories.Repositories
                 .SingleAsync(cancellationToken);
 
             var list = await TableNoTracking
-                .Where(a => !a.VersionStatus.Equals(2) && a.CategoryId.Equals(post.CategoryId))
+                .Where(a => !a.VersionStatus.Equals(2) && a.CategoryId.Equals(post.CategoryId) && a.IsConfirm)
                 .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
                 .Take(DefaultTake)
                 .ToListAsync(cancellationToken);
@@ -65,7 +65,7 @@ namespace Repositories.Repositories
         public async Task<ApiResult<List<PostShortSelectDto>>> GetByUserId(CancellationToken cancellationToken, int id)
         {
             var list = await TableNoTracking
-                .Where(a => !a.VersionStatus.Equals(2) && a.UserId.Equals(id))
+                .Where(a => !a.VersionStatus.Equals(2) && a.UserId.Equals(id) && a.IsConfirm)
                 .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
                 .Take(DefaultTake)
                 .ToListAsync(cancellationToken);
@@ -283,7 +283,7 @@ namespace Repositories.Repositories
 
             var list = await TableNoTracking
                 .Where(a => !a.VersionStatus.Equals(2) &&
-                            EF.Functions.Contains(a.Title, str))
+                            EF.Functions.Contains(a.Title, str) && a.IsConfirm)
                 .OrderByDescending(a => a.Time)
                 .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
                 .Take(DefaultTake)
