@@ -16,6 +16,8 @@ namespace Repositories.Contracts
 
         Task<ApiResult<List<PostShortSelectDto>>> GetByUserId(CancellationToken cancellationToken, int id);
 
+        Task<ApiResult<List<PostShortSelectDto>>> GetByStateId(CancellationToken cancellationToken, int id);
+
         Task<ApiResult<List<ViewShortDto>>> GetView(CancellationToken cancellationToken, int id);
 
         Task<ApiResult<List<PostShortSelectDto>>> GetCustom(CancellationToken cancellationToken, int type, int dateType, int count);

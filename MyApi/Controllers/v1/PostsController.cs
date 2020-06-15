@@ -160,6 +160,13 @@ namespace MyApi.Controllers.v1
 
         [AllowAnonymous]
         [HttpGet("{id:int}")]
+        public virtual async Task<ApiResult<List<PostShortSelectDto>>> GetByStateId(int id, CancellationToken cancellationToken)
+        {
+            return await _postRepository.GetByStateId(cancellationToken, id);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{id:int}")]
         public virtual async Task<ApiResult<List<ViewShortDto>>> GetView(int id, CancellationToken cancellationToken)
         {
             return await _postRepository.GetView(cancellationToken, id);

@@ -12,7 +12,6 @@ using Data.Contracts;
 using Data.Repositories;
 using Entities.Post;
 using Entities.User;
-using Microsoft.AspNetCore.Mvc;
 using Models.Base;
 using Models.Models;
 using Repositories.Contracts;
@@ -66,6 +65,17 @@ namespace Repositories.Repositories
         {
             var list = await TableNoTracking
                 .Where(a => !a.VersionStatus.Equals(2) && a.UserId.Equals(id) && a.IsConfirm)
+                .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
+                .Take(DefaultTake)
+                .ToListAsync(cancellationToken);
+
+            return list;
+        }
+
+        public async Task<ApiResult<List<PostShortSelectDto>>> GetByStateId(CancellationToken cancellationToken, int id)
+        {
+            var list = await TableNoTracking
+                .Where(a => !a.VersionStatus.Equals(2) && a.StateId.Equals(id) && a.IsConfirm)
                 .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
                 .Take(DefaultTake)
                 .ToListAsync(cancellationToken);

@@ -15,17 +15,17 @@ namespace Services.DataInitializer
 
         public void InitializeData()
         {
-            if (!_repository.TableNoTracking.Any(p => p.Name == "دسته بندی اصلی"))
-            {
-                _repository.Add(new Category
-                {
-                    Name = "دسته بندی اصلی",
-                    Version = 1,
-                    VersionStatus = 0,
-                    Image = "img.png",
-                    ParentCategoryId = null
-                });
-            }
+            //if (!_repository.TableNoTracking.Any(p => p.Name == "دسته بندی اصلی"))
+            //{
+            //    _repository.Add(new Category
+            //    {
+            //        Name = "دسته بندی اصلی",
+            //        Version = 1,
+            //        VersionStatus = 0,
+            //        Image = "img.png",
+            //        ParentCategoryId = null
+            //    });
+            //}
         }
     }
 }
