@@ -53,7 +53,6 @@ namespace Repositories.Repositories
             return list;
         }
 
-
         public async Task<ApiResult<List<StateDto>>> GetAllByStateId(int id, CancellationToken cancellationToken)
         {
             var list = await TableNoTracking
