@@ -123,7 +123,7 @@ namespace MyApi.Controllers.v1
 
             var files = Request.Form.Files;
 
-            if (files == null)
+            if (files == null || files.Count == 0)
                 return result;
 
             var imgResult = _filesController.Upload(files);
