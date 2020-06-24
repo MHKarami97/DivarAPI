@@ -343,11 +343,12 @@ namespace Repositories.Repositories
         public async Task<bool> ChangeStatus(CancellationToken cancellationToken, int id)
         {
             var item = await TableNoTracking
-                .Where(a => !a.VersionStatus.Equals(2) && a.Id.Equals(id))
-                .Take(DefaultTake)
-                .SingleAsync(cancellationToken);
+                .SingleAsync(a => !a.VersionStatus.Equals(2) && a.Id.Equals(id), cancellationToken);
 
-            item.IsConfirm = item.IsConfirm;
+            if (item.IsConfirm)
+                return true;
+
+            item.IsConfirm = true;
 
             await UpdateAsync(item, cancellationToken);
 

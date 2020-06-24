@@ -52,7 +52,7 @@ namespace MyApi.Controllers.v1
         [Authorize(Policy = "WorkerPolicy")]
         public override async Task<ApiResult<StateDto>> Create(StateCreateDto dto, CancellationToken cancellationToken)
         {
-            if (dto.ParentStateId == 0 || dto.ParentStateId == null)
+            if (dto.ParentStateId == null)
                 return await base.Create(dto, cancellationToken);
 
             var isParentExist = await Repository.TableNoTracking.SingleOrDefaultAsync(a => a.Id.Equals(dto.ParentStateId), cancellationToken);
@@ -60,7 +60,7 @@ namespace MyApi.Controllers.v1
             if (isParentExist == null)
                 return BadRequest("دسته مادر موجود نمی باشد");
 
-            if (!isParentExist.ParentStateId.Equals(0) || isParentExist.ParentStateId != null)
+            if (isParentExist.ParentStateId != null)
                 return BadRequest("امکان دسته بندی بیشتر از دو مرحله امکان پذیر نمی باشد");
 
             return await base.Create(dto, cancellationToken);

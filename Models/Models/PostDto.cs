@@ -74,6 +74,8 @@ namespace Models.Models
     {
         public string Title { get; set; }
         public bool IsConfirm { get; set; }
+        public string CategoryName { get; set; }
+        public string StateName { get; set; }
     }
 
     public class PostSelectDto : BaseDto<PostSelectDto, Post>
