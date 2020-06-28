@@ -40,7 +40,7 @@ namespace Repositories.Repositories
                 .Where(a => !a.VersionStatus.Equals(2) && a.CategoryId.Equals(id) && a.IsConfirm)
                 .OrderByDescending(a => a.Time)
                 .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
-                .Take(DefaultTake + to)
+                //.Take(DefaultTake + to)
                 .ToListAsync(cancellationToken);
 
             return list;
@@ -55,7 +55,7 @@ namespace Repositories.Repositories
             var list = await TableNoTracking
                 .Where(a => !a.VersionStatus.Equals(2) && a.CategoryId.Equals(post.CategoryId) && a.IsConfirm)
                 .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
-                .Take(DefaultTake)
+                //.Take(DefaultTake)
                 .ToListAsync(cancellationToken);
 
             return list;
@@ -66,7 +66,7 @@ namespace Repositories.Repositories
             var list = await TableNoTracking
                 .Where(a => !a.VersionStatus.Equals(2) && a.UserId.Equals(id) && a.IsConfirm)
                 .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
-                .Take(DefaultTake)
+                //.Take(DefaultTake)
                 .ToListAsync(cancellationToken);
 
             return list;
@@ -77,7 +77,7 @@ namespace Repositories.Repositories
             var list = await TableNoTracking
                 .Where(a => !a.VersionStatus.Equals(2) && a.StateId.Equals(id) && a.IsConfirm)
                 .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
-                .Take(DefaultTake)
+                //.Take(DefaultTake)
                 .ToListAsync(cancellationToken);
 
             return list;
@@ -90,7 +90,7 @@ namespace Repositories.Repositories
                 .Where(a => !a.VersionStatus.Equals(2) &&
                             a.State.ParentStateId.Equals(id) && a.IsConfirm)
                 .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
-                .Take(DefaultTake)
+                //.Take(DefaultTake)
                 .ToListAsync(cancellationToken);
 
             return list;
@@ -320,8 +320,21 @@ namespace Repositories.Repositories
             var list = await TableNoTracking
                 .Where(a => !a.VersionStatus.Equals(2) && a.IsConfirm.Equals(status))
                 .OrderByDescending(a => a.Time)
+                .Include(a => a.Images)
                 .ProjectTo<PostShortStatusSelectDto>(Mapper.ConfigurationProvider)
                 .Take(DefaultTake)
+                .ToListAsync(cancellationToken);
+
+            return list;
+        }
+
+        public async Task<ApiResult<List<PostShortSelectDto>>> GetUserPosts(CancellationToken cancellationToken, int id)
+        {
+            var list = await TableNoTracking
+                .Where(a => !a.VersionStatus.Equals(2) && a.UserId.Equals(id))
+                .OrderByDescending(a => a.Time)
+                .Include(a => a.Images)
+                .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
             return list;
@@ -334,7 +347,6 @@ namespace Repositories.Repositories
                 .OrderByDescending(a => a.Time)
                 .Include(a => a.Images)
                 .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
-                .Take(DefaultTake)
                 .ToListAsync(cancellationToken);
 
             return list;

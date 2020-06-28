@@ -209,6 +209,29 @@ namespace MyApi.Controllers.v1
             return Ok();
         }
 
+        [HttpGet("{id:int}")]
+        public virtual async Task<ApiResult> DeActive(CancellationToken cancellationToken, int id)
+        {
+            var userId = HttpContext.User.Identity.GetUserId<int>();
+
+            var post = await base.Get(id, cancellationToken);
+
+            if (!post.Data.Id.Equals(userId))
+                return BadRequest("این پست برای شما نمی باشد");
+
+            await base.Delete(id, cancellationToken);
+
+            return Ok();
+        }
+
+        [HttpGet]
+        public virtual async Task<ApiResult<List<PostShortSelectDto>>> GetUserPosts(CancellationToken cancellationToken)
+        {
+            var userId = HttpContext.User.Identity.GetUserId<int>();
+
+            return  await _postRepository.GetUserPosts(cancellationToken, userId);
+        }
+
         [HttpGet]
         [AllowAnonymous]
         public virtual async Task<ApiResult<List<PostShortSelectDto>>> GetShort(CancellationToken cancellationToken)

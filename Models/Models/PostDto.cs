@@ -73,9 +73,15 @@ namespace Models.Models
     public class PostShortStatusSelectDto : BaseDto<PostShortStatusSelectDto, Post>
     {
         public string Title { get; set; }
-        public bool IsConfirm { get; set; }
         public string CategoryName { get; set; }
         public string StateName { get; set; }
+        public string Time { get; set; }
+        public string Location { get; set; }
+        public string Phone { get; set; }
+        public long Price { get; set; }
+        public string Text { get; set; }
+        public int Type { get; set; }
+        public List<PostImageDto> Images { get; set; }
     }
 
     public class PostSelectDto : BaseDto<PostSelectDto, Post>
