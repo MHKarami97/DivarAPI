@@ -214,9 +214,11 @@ namespace MyApi.Controllers.v1
         {
             var userId = HttpContext.User.Identity.GetUserId<int>();
 
-            var post = await base.Get(id, cancellationToken);
+            var isValid = await Repository.TableNoTracking
+                .AnyAsync(a => a.Id.Equals(id) && a.UserId.Equals(userId),
+                cancellationToken);
 
-            if (!post.Data.Id.Equals(userId))
+            if (!isValid)
                 return BadRequest("این پست برای شما نمی باشد");
 
             await base.Delete(id, cancellationToken);
@@ -229,7 +231,7 @@ namespace MyApi.Controllers.v1
         {
             var userId = HttpContext.User.Identity.GetUserId<int>();
 
-            return  await _postRepository.GetUserPosts(cancellationToken, userId);
+            return await _postRepository.GetUserPosts(cancellationToken, userId);
         }
 
         [HttpGet]
