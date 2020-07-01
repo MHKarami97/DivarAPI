@@ -28,30 +28,46 @@ namespace MyApi.Controllers.v1
             _security = security;
         }
 
-        [AllowAnonymous]
+        [NonAction]
         public override Task<ApiResult<CommentSelectDto>> Get(int id, CancellationToken cancellationToken)
         {
             return base.Get(id, cancellationToken);
-        }
-
-        [AllowAnonymous]
-        [HttpGet("{id:int}")]
-        public async Task<ApiResult<List<CommentSelectDto>>> GetPostComments(int id, CancellationToken cancellationToken)
-        {
-            return await _commentRepository.GetPostComments(id, cancellationToken);
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<ApiResult<List<CommentSelectDto>>> GetLastComments(CancellationToken cancellationToken)
-        {
-            return await _commentRepository.GetLastComments(cancellationToken);
         }
 
         [Authorize(Policy = "WorkerPolicy")]
         public override Task<ApiResult<List<CommentSelectDto>>> Get(CancellationToken cancellationToken)
         {
             return base.Get(cancellationToken);
+        }
+
+        [HttpGet("{id:int}")]
+        [Authorize(Policy = "WorkerPolicy")]
+        public async Task<ApiResult<List<CommentSelectDto>>> GetPostComments(int id, CancellationToken cancellationToken)
+        {
+            return await _commentRepository.GetPostComments(id, cancellationToken);
+        }
+
+        [HttpGet]
+        [Authorize(Policy = "WorkerPolicy")]
+        public async Task<ApiResult<List<CommentSelectDto>>> GetLastComments(CancellationToken cancellationToken)
+        {
+            return await _commentRepository.GetLastComments(cancellationToken);
+        }
+
+        [HttpGet]
+        public async Task<ApiResult<List<CommentShortSelectDto>>> GetByUser(CancellationToken cancellationToken)
+        {
+            var userId = HttpContext.User.Identity.GetUserId<int>();
+
+            return await _commentRepository.GetByUser(cancellationToken, userId);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<ApiResult<List<CommentSelectDto>>> GetByPost(CancellationToken cancellationToken, int id)
+        {
+            var userId = HttpContext.User.Identity.GetUserId<int>();
+
+            return await _commentRepository.GetByPost(cancellationToken, userId, id);
         }
 
         [Authorize(Policy = "SuperAdminPolicy")]

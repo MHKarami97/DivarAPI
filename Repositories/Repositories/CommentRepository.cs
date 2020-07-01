@@ -38,7 +38,6 @@ namespace Repositories.Repositories
             var list = await TableNoTracking
                 .Where(a => !a.VersionStatus.Equals(2))
                 .OrderByDescending(a => a.Time)
-                .Take(DefaultTake)
                 .ProjectTo<CommentSelectDto>(Mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
@@ -54,6 +53,37 @@ namespace Repositories.Repositories
                 .FirstAsync(cancellationToken);
 
             return lastComment;
+        }
+
+        public async Task<ApiResult<List<CommentShortSelectDto>>> GetByUser(CancellationToken cancellationToken, int userId)
+        {
+            var list = await TableNoTracking
+                .Include(a => a.Post)
+                .Where(a => !a.VersionStatus.Equals(2) &&
+                            a.CreatorId.Equals(userId) &&
+                            !a.Post.VersionStatus.Equals(2))
+                .OrderByDescending(a => a.Time)
+                .GroupBy(a => a.PostId)
+                .ProjectTo<CommentShortSelectDto>(Mapper.ConfigurationProvider)
+                .ToListAsync(cancellationToken);
+
+            return list;
+        }
+
+        public async Task<ApiResult<List<CommentSelectDto>>> GetByPost(CancellationToken cancellationToken, int userId, int postId)
+        {
+            var list = await TableNoTracking
+                .Include(a => a.Post)
+                .Where(a => !a.VersionStatus.Equals(2) &&
+                            a.CreatorId.Equals(userId) &&
+                            a.PostId.Equals(postId) &&
+                            !a.Post.VersionStatus.Equals(2))
+                .OrderByDescending(a => a.Time)
+                .GroupBy(a => a.PostId)
+                .ProjectTo<CommentSelectDto>(Mapper.ConfigurationProvider)
+                .ToListAsync(cancellationToken);
+
+            return list;
         }
     }
 }

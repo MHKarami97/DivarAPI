@@ -16,5 +16,9 @@ namespace Repositories.Contracts
         Task<ApiResult<List<CommentSelectDto>>> GetLastComments(CancellationToken cancellationToken);
 
         Task<DateTimeOffset> Create(CommentDto dto, CancellationToken cancellationToken);
+
+        Task<ApiResult<List<CommentShortSelectDto>>> GetByUser(CancellationToken cancellationToken, int userId);
+
+        Task<ApiResult<List<CommentSelectDto>>> GetByPost(CancellationToken cancellationToken, int userId, int id);
     }
 }

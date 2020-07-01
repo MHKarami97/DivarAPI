@@ -33,7 +33,8 @@ namespace Models.Models
     public class CommentSelectDto : BaseDto<CommentSelectDto, Comment>
     {
         public string Text { get; set; }
-        public int PostTitle { get; set; }
+        public int PostId { get; set; }
+        public string PostTitle { get; set; }
         public string Time { get; set; }
 
         public override void CustomMappings(IMappingExpression<Comment, CommentSelectDto> mappingExpression)
@@ -42,5 +43,11 @@ namespace Models.Models
                 dest => dest.Time,
                 config => config.MapFrom(src => src.Time.ToString("g")));
         }
+    }
+
+    public class CommentShortSelectDto : BaseDto<CommentShortSelectDto, Comment>
+    {
+        public int PostId { get; set; }
+        public string PostTitle { get; set; }
     }
 }
