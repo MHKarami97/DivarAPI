@@ -10,4 +10,13 @@ namespace Models.More
 
         public List<string> Images { get; set; }
     }
+
+    public class UploadResultSingle
+    {
+        public bool Status { get; set; }
+
+        public string Message { get; set; }
+
+        public string Images { get; set; }
+    }
 }

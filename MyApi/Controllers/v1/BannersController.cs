@@ -15,9 +15,12 @@ namespace MyApi.Controllers.v1
     [ApiVersion("1")]
     public class BannersController : CrudController<BannerDto, BannerSelectDto, Banner>
     {
-        public BannersController(IRepository<Banner> repository, IMapper mapper)
+        private readonly FilesController _filesController;
+
+        public BannersController(IRepository<Banner> repository, IMapper mapper, FilesController filesController)
             : base(repository, mapper)
         {
+            _filesController = filesController;
         }
 
         [AllowAnonymous]
@@ -45,9 +48,24 @@ namespace MyApi.Controllers.v1
         }
 
         [Authorize(Policy = "WorkerPolicy")]
-        public override Task<ApiResult<BannerSelectDto>> Create(BannerDto dto, CancellationToken cancellationToken)
+        [RequestSizeLimit(900_000_000)]
+        public override async Task<ApiResult<BannerSelectDto>> Create([FromForm] BannerDto dto, CancellationToken cancellationToken)
         {
-            return base.Create(dto, cancellationToken);
+            var result = await base.Create(dto, cancellationToken);
+
+            var files = Request.Form.Files;
+
+            if (files == null || files.Count == 0)
+                return result;
+
+            var imgResult = _filesController.SingleCreate(files[0]);
+
+            if (!imgResult.Status)
+                return BadRequest(imgResult.Message);
+
+            dto.Image = imgResult.Images;
+
+            return await base.Create(dto, cancellationToken);
         }
     }
 }

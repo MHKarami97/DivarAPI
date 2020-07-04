@@ -61,6 +61,57 @@ namespace MyApi.Controllers.v1
             return Ok(result);
         }
 
+        [HttpPost]
+        [RequestSizeLimit(900_000)]
+        public UploadResultSingle SingleCreate(IFormFile file)
+        {
+            switch (_security.ImageCheck(file))
+            {
+                case 0:
+                    break;
+
+                case 1:
+                    return new UploadResultSingle
+                    {
+                        Images = null,
+                        Message = "فایل نامعتبر است",
+                        Status = false
+                    };
+
+                case 2:
+                    return new UploadResultSingle
+                    {
+                        Images = null,
+                        Message = "فرمت فایل نامعتبر است",
+                        Status = false
+                    };
+
+                case 3:
+                    return new UploadResultSingle
+                    {
+                        Images = null,
+                        Message = "حداکثر حجم فایل نامعتبر است",
+                        Status = false
+                    };
+            }
+
+            var uploads = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads");
+
+            var address = _security.GetUniqueFileName(file.FileName);
+
+            var fullPath = Path.Combine(uploads, address);
+
+            file.CopyTo(new FileStream(fullPath, FileMode.Create));
+
+
+            return new UploadResultSingle
+            {
+                Images = address,
+                Message = "ok",
+                Status = true
+            };
+        }
+
         [HttpGet]
         [Authorize]
         [RequestSizeLimit(900_000_000)]

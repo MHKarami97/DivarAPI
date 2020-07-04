@@ -1,6 +1,5 @@
 ﻿using Entities.More;
 using Models.Base;
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Models.Models
@@ -10,8 +9,7 @@ namespace Models.Models
         [JsonIgnore]
         public override int Id { get; set; }
 
-        [Required]
-        [StringLength(200)]
+        [JsonIgnore]
         public string Image { get; set; }
 
         public string Address { get; set; }
