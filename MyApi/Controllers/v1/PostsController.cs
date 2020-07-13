@@ -28,8 +28,9 @@ namespace MyApi.Controllers.v1
         private readonly IRepository<Favorite> _repositoryFavorite;
         private readonly ViewsController _viewsController;
         private readonly FilesController _filesController;
+        private readonly IRepository<View> _repositoryView;
 
-        public PostsController(IRepository<Post> repository, IMapper mapper, UserManager<User> userManager, IRepository<PostImage> repositoryImage, IRepository<Favorite> repositoryFavorite, ViewsController viewsController, IPostRepository postRepository, FilesController filesController)
+        public PostsController(IRepository<Post> repository, IMapper mapper, UserManager<User> userManager, IRepository<PostImage> repositoryImage, IRepository<Favorite> repositoryFavorite, ViewsController viewsController, IPostRepository postRepository, FilesController filesController, IRepository<View> repositoryView)
             : base(repository, mapper)
         {
             _userManager = userManager;
@@ -38,6 +39,7 @@ namespace MyApi.Controllers.v1
             _viewsController = viewsController;
             _postRepository = postRepository;
             _filesController = filesController;
+            _repositoryView = repositoryView;
         }
 
         [Authorize(Policy = "SuperAdminPolicy")]
@@ -75,7 +77,11 @@ namespace MyApi.Controllers.v1
             .ProjectTo<PostImageDto>(Mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
+            var views = await _repositoryView.TableNoTracking
+                .CountAsync(a => !a.VersionStatus.Equals(2) && a.PostId.Equals(result.Data.Id), cancellationToken);
+
             result.Data.Images = images;
+            result.Data.View = views;
 
             await _viewsController.IncreaseView(id, isAuthorize, cancellationToken);
 

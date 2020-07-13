@@ -95,6 +95,7 @@ namespace Models.Models
         public long Price { get; set; }
         public string Text { get; set; }
         public int Type { get; set; }
+        public int View { get; set; }
         public List<PostImageDto> Images { get; set; }
 
         [IgnoreMap]
