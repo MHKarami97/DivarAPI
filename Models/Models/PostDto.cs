@@ -2,11 +2,10 @@
 using AutoMapper;
 using Models.Base;
 using Entities.Post;
-using Microsoft.AspNetCore.Http;
+using Common.Utilities;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Models.Models
 {
@@ -66,7 +65,7 @@ namespace Models.Models
         {
             mappingExpression.ForMember(
                 dest => dest.Time,
-                config => config.MapFrom(src => src.Time.ToString("d")));
+                config => config.MapFrom(src => src.Time.ToBeautyDate()));
         }
     }
 
@@ -105,7 +104,7 @@ namespace Models.Models
         {
             mappingExpression.ForMember(
                 dest => dest.Time,
-                config => config.MapFrom(src => src.Time.ToString("d")));
+                config => config.MapFrom(src => src.Time.ToBeautyDate()));
         }
     }
 }
