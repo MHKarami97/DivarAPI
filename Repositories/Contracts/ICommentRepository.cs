@@ -19,6 +19,6 @@ namespace Repositories.Contracts
 
         Task<ApiResult<List<CommentShortSelectDto>>> GetByUser(CancellationToken cancellationToken, int userId);
 
-        Task<ApiResult<List<CommentSelectDto>>> GetByPost(CancellationToken cancellationToken, int userId, int id);
+        Task<ApiResult<CommentPostShortSelectDto>> GetByPost(CancellationToken cancellationToken, int userId, int id, int creatorId);
     }
 }

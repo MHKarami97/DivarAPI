@@ -161,9 +161,6 @@ namespace Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AnswererId")
-                        .HasColumnType("int");
-
                     b.Property<int>("CreatorId")
                         .HasColumnType("int");
 
@@ -184,10 +181,10 @@ namespace Data.Migrations
                     b.Property<int>("VersionStatus")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.Property<int>("Witch")
+                        .HasColumnType("int");
 
-                    b.HasIndex("AnswererId")
-                        .HasName("IX_Comment_AnswererId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CreatorId")
                         .HasName("IX_Comment_CreatorId");
@@ -792,12 +789,6 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Entities.Post.Comment", b =>
                 {
-                    b.HasOne("Entities.User.User", "UserAnswer")
-                        .WithMany("AnswererComments")
-                        .HasForeignKey("AnswererId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("Entities.User.User", "User")
                         .WithMany("StarterComments")
                         .HasForeignKey("CreatorId")

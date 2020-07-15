@@ -11,11 +11,10 @@ namespace Entities.Post
         public DateTimeOffset Time { get; set; }
         public int PostId { get; set; }
         public int CreatorId { get; set; }
-        public int AnswererId { get; set; }
+        public int Witch { get; set; }
 
         public Post Post { get; set; }
         public User.User User { get; set; }
-        public User.User UserAnswer { get; set; }
     }
 
     public class CommentConfiguration : IEntityTypeConfiguration<Comment>
@@ -26,15 +25,11 @@ namespace Entities.Post
             builder.Property(p => p.Time).IsRequired();
             builder.Property(p => p.PostId).IsRequired();
             builder.Property(p => p.CreatorId).IsRequired();
+            builder.Property(p => p.Witch).IsRequired();
 
             builder.HasOne(p => p.Post)
                 .WithMany(c => c.Comments)
                 .HasForeignKey(p => p.PostId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            builder.HasOne(p => p.UserAnswer)
-                .WithMany(c => c.AnswererComments)
-                .HasForeignKey(p => p.AnswererId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(p => p.User)
@@ -44,7 +39,6 @@ namespace Entities.Post
 
             builder.HasIndex(a => a.PostId).HasName("IX_Comment_PostId");
             builder.HasIndex(a => a.CreatorId).HasName("IX_Comment_CreatorId");
-            builder.HasIndex(a => a.AnswererId).HasName("IX_Comment_AnswererId");
         }
     }
 }

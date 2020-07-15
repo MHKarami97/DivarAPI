@@ -8,6 +8,7 @@ using Data.Contracts;
 using Entities.Post;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models.Base;
 using Repositories.Contracts;
 using Services.Security;
@@ -19,13 +20,15 @@ namespace MyApi.Controllers.v1
     public class CommentsController : CrudController<CommentDto, CommentSelectDto, Comment>
     {
         private readonly ISecurity _security;
+        private readonly IRepository<Post> _postRepository;
         private readonly ICommentRepository _commentRepository;
 
-        public CommentsController(IRepository<Comment> repository, IMapper mapper, ICommentRepository commentRepository, ISecurity security)
+        public CommentsController(IRepository<Comment> repository, IMapper mapper, ICommentRepository commentRepository, ISecurity security, IRepository<Post> postRepository)
             : base(repository, mapper)
         {
             _commentRepository = commentRepository;
             _security = security;
+            _postRepository = postRepository;
         }
 
         [NonAction]
@@ -63,11 +66,11 @@ namespace MyApi.Controllers.v1
         }
 
         [HttpGet("{id:int}")]
-        public async Task<ApiResult<List<CommentSelectDto>>> GetByPost(CancellationToken cancellationToken, int id)
+        public async Task<ApiResult<CommentPostShortSelectDto>> GetByPost(CancellationToken cancellationToken, int id, int creatorId)
         {
             var userId = HttpContext.User.Identity.GetUserId<int>();
 
-            return await _commentRepository.GetByPost(cancellationToken, userId, id);
+            return await _commentRepository.GetByPost(cancellationToken, userId, id, creatorId);
         }
 
         [Authorize(Policy = "SuperAdminPolicy")]
@@ -84,7 +87,16 @@ namespace MyApi.Controllers.v1
 
         public override async Task<ApiResult<CommentSelectDto>> Create(CommentDto dto, CancellationToken cancellationToken)
         {
-            dto.CreatorId = HttpContext.User.Identity.GetUserId<int>();
+            var userId = HttpContext.User.Identity.GetUserId<int>();
+
+            dto.CreatorId = userId;
+
+            var post =
+                await _postRepository
+                    .TableNoTracking
+                    .SingleAsync(a => a.Id.Equals(dto.PostId), cancellationToken);
+
+            dto.Witch = post.UserId.Equals(userId) ? 2 : 1;
 
             if (!_security.TimeCheck(await _commentRepository.Create(dto, cancellationToken)))
                 return BadRequest("لطفا کمی صبر کنید و بعد نظر بدهید");

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Data.Migrations
 {
-    public partial class SiteMigration : Migration
+    public partial class MyMig : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -382,16 +382,11 @@ namespace Data.Migrations
                     Time = table.Column<DateTimeOffset>(nullable: false),
                     PostId = table.Column<int>(nullable: false),
                     CreatorId = table.Column<int>(nullable: false),
-                    AnswererId = table.Column<int>(nullable: false)
+                    Witch = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Comment", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Comment_AspNetUser_AnswererId",
-                        column: x => x.AnswererId,
-                        principalTable: "AspNetUser",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Comment_AspNetUser_CreatorId",
                         column: x => x.CreatorId,
@@ -579,11 +574,6 @@ namespace Data.Migrations
                 name: "IX_Category_ParentCategoryId",
                 table: "Category",
                 column: "ParentCategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Comment_AnswererId",
-                table: "Comment",
-                column: "AnswererId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comment_CreatorId",

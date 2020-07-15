@@ -60,30 +60,53 @@ namespace Repositories.Repositories
             var list = await TableNoTracking
                 .Include(a => a.Post)
                 .Where(a => !a.VersionStatus.Equals(2) &&
-                            a.CreatorId.Equals(userId) &&
+                           (a.CreatorId.Equals(userId) || a.Post.UserId.Equals(userId)) &&
                             !a.Post.VersionStatus.Equals(2))
                 .OrderByDescending(a => a.Time)
-                .GroupBy(a => a.PostId)
                 .ProjectTo<CommentShortSelectDto>(Mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
-            return list;
+           var result= list.GroupBy(n => new {n.PostId, n.CreatorId})
+                .Select(a => a.First()).ToList();
+
+            return result;
         }
 
-        public async Task<ApiResult<List<CommentSelectDto>>> GetByPost(CancellationToken cancellationToken, int userId, int postId)
+        public async Task<ApiResult<CommentPostShortSelectDto>> GetByPost(CancellationToken cancellationToken, int userId, int postId, int creatorId)
         {
-            var list = await TableNoTracking
-                .Include(a => a.Post)
-                .Where(a => !a.VersionStatus.Equals(2) &&
-                            a.CreatorId.Equals(userId) &&
-                            a.PostId.Equals(postId) &&
-                            !a.Post.VersionStatus.Equals(2))
-                .OrderByDescending(a => a.Time)
-                .GroupBy(a => a.PostId)
-                .ProjectTo<CommentSelectDto>(Mapper.ConfigurationProvider)
-                .ToListAsync(cancellationToken);
+            List<CommentPostSelectDto> list;
 
-            return list;
+            if (creatorId == userId)
+            {
+                list = await TableNoTracking
+                   .Include(a => a.Post)
+                   .Where(a => !a.VersionStatus.Equals(2) &&
+                               a.PostId.Equals(postId) &&
+                               a.CreatorId.Equals(creatorId) &&
+                               !a.Post.VersionStatus.Equals(2))
+                   .OrderByDescending(a => a.Time)
+                   .ProjectTo<CommentPostSelectDto>(Mapper.ConfigurationProvider)
+                   .ToListAsync(cancellationToken);
+            }
+            else
+            {
+                list = await TableNoTracking
+                   .Include(a => a.Post)
+                   .Where(a => !a.VersionStatus.Equals(2) &&
+                               a.PostId.Equals(postId) &&
+                               a.CreatorId.Equals(creatorId) &&
+                               a.Post.UserId.Equals(userId) &&
+                               !a.Post.VersionStatus.Equals(2))
+                   .OrderByDescending(a => a.Time)
+                   .ProjectTo<CommentPostSelectDto>(Mapper.ConfigurationProvider)
+                   .ToListAsync(cancellationToken);
+            }
+
+            return new CommentPostShortSelectDto
+            {
+                UserId = userId,
+                Comment = list
+            };
         }
     }
 }
