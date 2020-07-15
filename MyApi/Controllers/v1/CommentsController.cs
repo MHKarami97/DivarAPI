@@ -89,6 +89,10 @@ namespace MyApi.Controllers.v1
         {
             var userId = HttpContext.User.Identity.GetUserId<int>();
 
+            if (dto.From == 2 &&
+                await _commentRepository.CheckExist(dto.PostId, userId, cancellationToken))
+                return BadRequest("شما قبلا این گفتگو را آغاز کرده اید، به صفحه چت ها بروید");
+
             var post =
                 await _postRepository
                     .TableNoTracking
@@ -106,9 +110,6 @@ namespace MyApi.Controllers.v1
                 dto.Witch = 1;
                 dto.CreatorId = userId;
             }
-
-            if (!_security.TimeCheck(await _commentRepository.Create(dto, cancellationToken)))
-                return BadRequest("لطفا کمی صبر کنید و بعد نظر بدهید");
 
             return await base.Create(dto, cancellationToken);
         }

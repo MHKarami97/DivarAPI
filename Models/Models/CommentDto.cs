@@ -28,6 +28,8 @@ namespace Models.Models
 
         [JsonIgnore]
         public DateTimeOffset Time { get; set; }
+
+        public int From { get; set; }
     }
 
     public class CommentSelectDto : BaseDto<CommentSelectDto, Comment>

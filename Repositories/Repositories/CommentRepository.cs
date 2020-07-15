@@ -23,6 +23,15 @@ namespace Repositories.Repositories
         {
         }
 
+        public async Task<bool> CheckExist(int postId, int creatorId, CancellationToken cancellationToken)
+        {
+            var item = await TableNoTracking
+                .AnyAsync(a => !a.VersionStatus.Equals(2) && a.PostId.Equals(postId) &&
+                               a.CreatorId.Equals(creatorId), cancellationToken);
+
+            return item;
+        }
+
         public async Task<ApiResult<List<CommentSelectDto>>> GetPostComments(int id, CancellationToken cancellationToken)
         {
             var list = await TableNoTracking
@@ -84,7 +93,7 @@ namespace Repositories.Repositories
                                a.PostId.Equals(postId) &&
                                a.CreatorId.Equals(creatorId) &&
                                !a.Post.VersionStatus.Equals(2))
-                   .OrderByDescending(a => a.Time)
+                   .OrderBy(a => a.Time)
                    .ProjectTo<CommentPostSelectDto>(Mapper.ConfigurationProvider)
                    .ToListAsync(cancellationToken);
             }
@@ -97,7 +106,7 @@ namespace Repositories.Repositories
                                a.CreatorId.Equals(creatorId) &&
                                a.Post.UserId.Equals(userId) &&
                                !a.Post.VersionStatus.Equals(2))
-                   .OrderByDescending(a => a.Time)
+                   .OrderBy(a => a.Time)
                    .ProjectTo<CommentPostSelectDto>(Mapper.ConfigurationProvider)
                    .ToListAsync(cancellationToken);
             }
