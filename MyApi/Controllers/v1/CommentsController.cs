@@ -89,14 +89,24 @@ namespace MyApi.Controllers.v1
         {
             var userId = HttpContext.User.Identity.GetUserId<int>();
 
-            dto.CreatorId = userId;
-
             var post =
                 await _postRepository
                     .TableNoTracking
                     .SingleAsync(a => a.Id.Equals(dto.PostId), cancellationToken);
 
-            dto.Witch = post.UserId.Equals(userId) ? 2 : 1;
+            if (post.UserId.Equals(userId))
+            {
+                dto.Witch = 2;
+
+                if (!await _commentRepository
+                    .GetLastComment(dto.PostId, post.UserId, cancellationToken))
+                    return BadRequest("شما نمی توانید چت را شروع کنید");
+            }
+            else
+            {
+                dto.Witch = 1;
+                dto.CreatorId = userId;
+            }
 
             if (!_security.TimeCheck(await _commentRepository.Create(dto, cancellationToken)))
                 return BadRequest("لطفا کمی صبر کنید و بعد نظر بدهید");

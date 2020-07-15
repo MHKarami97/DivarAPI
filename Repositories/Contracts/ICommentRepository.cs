@@ -11,6 +11,8 @@ namespace Repositories.Contracts
 {
     public interface ICommentRepository : IRepository<Comment>
     {
+        Task<bool> GetLastComment(int postId, int creatorId, CancellationToken cancellationToken);
+
         Task<ApiResult<List<CommentSelectDto>>> GetPostComments(int id, CancellationToken cancellationToken);
 
         Task<ApiResult<List<CommentSelectDto>>> GetLastComments(CancellationToken cancellationToken);

@@ -23,6 +23,18 @@ namespace Repositories.Repositories
         {
         }
 
+        public async Task<bool> GetLastComment(int postId, int creatorId, CancellationToken cancellationToken)
+        {
+            var item = await TableNoTracking
+                .AnyAsync(a => !a.VersionStatus.Equals(2) &&
+                            a.PostId.Equals(postId) &&
+                            a.Witch.Equals(1) &&
+                            a.CreatorId.Equals(creatorId), cancellationToken);
+
+            return item;
+        }
+
+
         public async Task<ApiResult<List<CommentSelectDto>>> GetPostComments(int id, CancellationToken cancellationToken)
         {
             var list = await TableNoTracking
@@ -66,8 +78,8 @@ namespace Repositories.Repositories
                 .ProjectTo<CommentShortSelectDto>(Mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
-           var result= list.GroupBy(n => new {n.PostId, n.CreatorId})
-                .Select(a => a.First()).ToList();
+            var result = list.GroupBy(n => new { n.PostId, n.CreatorId })
+                 .Select(a => a.First()).ToList();
 
             return result;
         }

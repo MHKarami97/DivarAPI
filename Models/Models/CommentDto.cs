@@ -21,7 +21,6 @@ namespace Models.Models
         [Required]
         public int PostId { get; set; }
 
-        [JsonIgnore]
         public int CreatorId { get; set; }
 
         [JsonIgnore]
