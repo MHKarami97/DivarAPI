@@ -98,8 +98,7 @@ namespace MyApi.Controllers.v1
             {
                 dto.Witch = 2;
 
-                if (!await _commentRepository
-                    .GetLastComment(dto.PostId, post.UserId, cancellationToken))
+                if (dto.CreatorId == 0)
                     return BadRequest("شما نمی توانید چت را شروع کنید");
             }
             else

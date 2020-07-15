@@ -51,12 +51,10 @@ namespace MyApi.Controllers.v1
         [RequestSizeLimit(900_000_000)]
         public override async Task<ApiResult<BannerSelectDto>> Create([FromForm] BannerDto dto, CancellationToken cancellationToken)
         {
-            var result = await base.Create(dto, cancellationToken);
-
             var files = Request.Form.Files;
 
             if (files == null || files.Count == 0)
-                return result;
+                return BadRequest("فایل اشتباه است");
 
             var imgResult = _filesController.SingleCreate(files[0]);
 
