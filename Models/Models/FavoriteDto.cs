@@ -2,6 +2,8 @@
 using Entities.User;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using AutoMapper;
+using Common.Utilities;
 using Models.Base;
 
 namespace Models.Models
@@ -16,6 +18,13 @@ namespace Models.Models
         public long PostPrice { get; set; }
         public int PostType { get; set; }
         public int PostId { get; set; }
+
+        public override void CustomMappings(IMappingExpression<Favorite, FavoriteDto> mappingExpression)
+        {
+            mappingExpression.ForMember(
+                dest => dest.PostTime,
+                config => config.MapFrom(src => src.Post.Time.ToBeautyDate()));
+        }
     }
 
     public class FavoriteSelectDto : BaseDto<FavoriteSelectDto, Favorite>
