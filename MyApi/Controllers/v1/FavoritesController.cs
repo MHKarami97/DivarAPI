@@ -28,6 +28,7 @@ namespace MyApi.Controllers.v1
             var userId = HttpContext.User.Identity.GetUserId<int>();
 
             var list = await Repository.TableNoTracking
+                .Include(a => a.Post)
                 .Where(a => !a.VersionStatus.Equals(2) && a.UserId.Equals(userId))
                 .ProjectTo<FavoriteDto>(Mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
@@ -47,11 +48,20 @@ namespace MyApi.Controllers.v1
             return BadRequest();
         }
 
-        public override Task<ApiResult<FavoriteDto>> Create(FavoriteSelectDto dto, CancellationToken cancellationToken)
+        public override async Task<ApiResult<FavoriteDto>> Create(FavoriteSelectDto dto, CancellationToken cancellationToken)
         {
             dto.UserId = HttpContext.User.Identity.GetUserId<int>();
 
-            return base.Create(dto, cancellationToken);
+            var checkExist = await Repository.TableNoTracking
+                .SingleOrDefaultAsync(a => a.UserId.Equals(dto.UserId) &&
+                               a.PostId.Equals(dto.PostId), cancellationToken);
+
+            if (checkExist == null)
+                return await base.Create(dto, cancellationToken);
+
+            await base.Delete(checkExist.Id, cancellationToken);
+
+            return Ok();
         }
 
         [NonAction]

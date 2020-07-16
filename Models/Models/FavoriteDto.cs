@@ -1,4 +1,5 @@
-﻿using Entities.User;
+﻿using System.Collections.Generic;
+using Entities.User;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Models.Base;
@@ -8,10 +9,12 @@ namespace Models.Models
     public class FavoriteDto : BaseDto<FavoriteDto, Favorite>
     {
         public string PostTitle { get; set; }
-        public int PostView { get; set; }
-        public int PostRank { get; set; }
-        public string PostShortDescription { get; set; }
-        public string Image { get; set; }
+        public string PostCategoryName { get; set; }
+        public string PostStateName { get; set; }
+        public string PostTime { get; set; }
+        public List<PostImageDto> PostImages { get; set; }
+        public long PostPrice { get; set; }
+        public int PostType { get; set; }
         public int PostId { get; set; }
     }
 

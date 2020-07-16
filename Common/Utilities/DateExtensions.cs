@@ -10,11 +10,13 @@ namespace Common.Utilities
 
             var now = DateTimeOffset.Now;
 
-            if (date - now < new TimeSpan(0, 1, 0, 0))
+            if (date - now < new TimeSpan(0, 1, 0, 0) &&
+                date - now > new TimeSpan(0, 0, 0, 0))
             {
                 time = "کمتر از 1 ساعت";
             }
-            else if (date - now < new TimeSpan(0, 12, 0, 0))
+            else if (date - now < new TimeSpan(0, 12, 0, 0) &&
+                     date - now > new TimeSpan(0, 1, 0, 0))
             {
                 time = "کمتر از 12 ساعت";
             }
