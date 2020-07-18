@@ -35,5 +35,7 @@ namespace Repositories.Contracts
         Task<int> AddImage(List<string> images, int postId, CancellationToken cancellationToken);
 
         Task<bool> ChangeStatus(CancellationToken cancellationToken, int id);
+
+        Task<ApiResult<PostSelectEditDto>> GetByIdForEdit(CancellationToken cancellationToken, int id);
     }
 }

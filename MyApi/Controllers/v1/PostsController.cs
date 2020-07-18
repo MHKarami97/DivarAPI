@@ -246,5 +246,19 @@ namespace MyApi.Controllers.v1
         {
             return await _postRepository.GetShort(cancellationToken);
         }
+
+        [HttpGet("{id:int}")]
+        public virtual async Task<ApiResult<PostSelectEditDto>> GetByIdForEdit(CancellationToken cancellationToken, int id)
+        {
+            var userId = HttpContext.User.Identity.GetUserId<int>();
+
+            var isValid = await Repository.TableNoTracking
+                .SingleAsync(a => a.Id.Equals(id), cancellationToken);
+
+            if (!isValid.UserId.Equals(userId))
+                return BadRequest("این مطلب برای شما نمی باشد");
+
+            return await _postRepository.GetByIdForEdit(cancellationToken, id);
+        }
     }
 }

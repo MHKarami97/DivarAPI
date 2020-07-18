@@ -107,4 +107,19 @@ namespace Models.Models
                 config => config.MapFrom(src => src.Time.ToBeautyDate()));
         }
     }
+
+    public class PostSelectEditDto : BaseDto<PostSelectEditDto, Post>
+    {
+        public string Title { get; set; }
+        public string CategoryName { get; set; }
+        public string StateName { get; set; }
+        public int CategoryId { get; set; }
+        public int StateId { get; set; }
+        public string Location { get; set; }
+        public string Phone { get; set; }
+        public long Price { get; set; }
+        public string Text { get; set; }
+        public int Type { get; set; }
+        public List<PostImageDto> Images { get; set; }
+    }
 }

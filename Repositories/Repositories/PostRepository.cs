@@ -61,6 +61,16 @@ namespace Repositories.Repositories
             return list;
         }
 
+        public async Task<ApiResult<PostSelectEditDto>> GetByIdForEdit(CancellationToken cancellationToken, int id)
+        {
+            var item = await TableNoTracking
+                .Where(a => a.Id.Equals(id))
+                .ProjectTo<PostSelectEditDto>(Mapper.ConfigurationProvider)
+                .SingleAsync(cancellationToken);
+
+            return item;
+        }
+
         public async Task<ApiResult<List<PostShortSelectDto>>> GetByUserId(CancellationToken cancellationToken, int id)
         {
             var list = await TableNoTracking
