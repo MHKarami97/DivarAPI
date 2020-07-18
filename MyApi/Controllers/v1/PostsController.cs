@@ -90,26 +90,21 @@ namespace MyApi.Controllers.v1
 
         public override async Task<ApiResult<PostSelectDto>> Update(int id, PostDto dto, CancellationToken cancellationToken)
         {
-            User user = await _userManager.GetUserAsync(HttpContext.User);
+            var user = await _userManager.GetUserAsync(HttpContext.User);
 
             if (await _userManager.IsInRoleAsync(user, "Admin"))
-            {
                 return await base.Update(id, dto, cancellationToken);
-            }
 
-            if (await _userManager.IsInRoleAsync(user, "User"))
-            {
-                Post item = await Repository.TableNoTracking.SingleAsync(a => a.Id.Equals(id), cancellationToken);
+            if (!await _userManager.IsInRoleAsync(user, "User"))
+                return BadRequest();
 
-                if (!item.UserId.Equals(user.Id))
-                {
-                    return BadRequest();
-                }
+            var item = await Repository.TableNoTracking
+                .SingleAsync(a => a.Id.Equals(id), cancellationToken);
 
-                return await base.Update(id, dto, cancellationToken);
-            }
+            if (!item.UserId.Equals(user.Id))
+                return BadRequest();
 
-            return BadRequest();
+            return await base.Update(id, dto, cancellationToken);
         }
 
         [Authorize(Policy = "SuperAdminPolicy")]
