@@ -104,6 +104,8 @@ namespace MyApi.Controllers.v1
             if (!item.UserId.Equals(user.Id))
                 return BadRequest();
 
+            dto.UserId = user.Id;
+
             return await base.Update(id, dto, cancellationToken);
         }
 
