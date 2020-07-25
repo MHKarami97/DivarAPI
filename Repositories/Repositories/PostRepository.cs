@@ -322,8 +322,7 @@ namespace Repositories.Repositories
                 .Where(a => !a.VersionStatus.Equals(2) &&
                             EF.Functions.Contains(a.Title, str) && a.IsConfirm)
                 .OrderByDescending(a => a.Time)
-                .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
-                .Take(DefaultTake);
+                .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider);
 
             list = _sieveProcessor.Apply(sieveModel, list);
 
