@@ -1,16 +1,16 @@
-﻿using AspNetCoreRateLimit;
-using Data;
+﻿using Data;
 using Common;
 using Autofac;
-using Services.Services;
-using Data.Repositories;
 using Data.Contracts;
 using Entities.Common;
+using Services.CronJob;
+using Data.Repositories;
+using Services.Services;
+using Services.Security;
+using AspNetCoreRateLimit;
+using Repositories.Contracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Repositories.Contracts;
-using Services.CronJob;
-using Services.Security;
 
 namespace WebFramework.Configuration
 {

@@ -38,16 +38,16 @@ namespace Repositories.Repositories
             _sieveProcessor = sieveProcessor;
         }
 
-        public async Task<ApiResult<List<PostShortSelectDto>>> GetAllByCatId(CancellationToken cancellationToken, int id, int to = 0)
+        public async Task<ApiResult<List<PostShortSelectDto>>> GetAllByCatId(CancellationToken cancellationToken, int id, SieveModel sieveModel)
         {
-            var list = await TableNoTracking
+            var list = TableNoTracking
                 .Where(a => !a.VersionStatus.Equals(2) && a.CategoryId.Equals(id) && a.IsConfirm)
                 .OrderByDescending(a => a.Time)
-                .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
-                //.Take(DefaultTake + to)
-                .ToListAsync(cancellationToken);
+                .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider);
 
-            return list;
+            list = _sieveProcessor.Apply(sieveModel, list);
+
+            return await list.ToListAsync(cancellationToken);
         }
 
         public async Task<ApiResult<List<PostShortSelectDto>>> GetSimilar(CancellationToken cancellationToken, int id)
@@ -59,7 +59,7 @@ namespace Repositories.Repositories
             var list = await TableNoTracking
                 .Where(a => !a.VersionStatus.Equals(2) && a.CategoryId.Equals(post.CategoryId) && a.IsConfirm)
                 .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
-                //.Take(DefaultTake)
+                .Take(DefaultTake)
                 .ToListAsync(cancellationToken);
 
             return list;
@@ -86,15 +86,15 @@ namespace Repositories.Repositories
             return list;
         }
 
-        public async Task<ApiResult<List<PostShortSelectDto>>> GetByStateId(CancellationToken cancellationToken, int id)
+        public async Task<ApiResult<List<PostShortSelectDto>>> GetByStateId(CancellationToken cancellationToken, int id, SieveModel sieveModel)
         {
-            var list = await TableNoTracking
+            var list = TableNoTracking
                 .Where(a => !a.VersionStatus.Equals(2) && a.StateId.Equals(id) && a.IsConfirm)
-                .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
-                //.Take(DefaultTake)
-                .ToListAsync(cancellationToken);
+                .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider);
 
-            return list;
+            list = _sieveProcessor.Apply(sieveModel, list);
+
+            return await list.ToListAsync(cancellationToken);
         }
 
         public async Task<ApiResult<List<PostShortSelectDto>>> GetBySubStateId(CancellationToken cancellationToken, int id)
@@ -314,19 +314,20 @@ namespace Repositories.Repositories
             }
         }
 
-        public async Task<ApiResult<List<PostShortSelectDto>>> Search(CancellationToken cancellationToken, string str)
+        public async Task<ApiResult<List<PostShortSelectDto>>> Search(CancellationToken cancellationToken, string str, SieveModel sieveModel)
         {
             Assert.NotNullArgument(str, "کلمه مورد جستجو نامعتبر است");
 
-            var list = await TableNoTracking
+            var list = TableNoTracking
                 .Where(a => !a.VersionStatus.Equals(2) &&
                             EF.Functions.Contains(a.Title, str) && a.IsConfirm)
                 .OrderByDescending(a => a.Time)
                 .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
-                .Take(DefaultTake)
-                .ToListAsync(cancellationToken);
+                .Take(DefaultTake);
 
-            return list;
+            list = _sieveProcessor.Apply(sieveModel, list);
+
+            return await list.ToListAsync(cancellationToken);
         }
 
         public async Task<ApiResult<List<PostShortStatusSelectDto>>> GetByStatus(CancellationToken cancellationToken, bool status)

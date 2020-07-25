@@ -23,24 +23,24 @@ namespace MyApi.Controllers.v1
     [ApiVersion("1")]
     public class PostsController : CrudController<PostDto, PostSelectDto, Post>
     {
-        private readonly IPostRepository _postRepository;
         private readonly UserManager<User> _userManager;
-        private readonly IRepository<PostImage> _repositoryPostImage;
-        private readonly IRepository<Favorite> _repositoryFavorite;
+        private readonly IPostRepository _postRepository;
         private readonly ViewsController _viewsController;
         private readonly FilesController _filesController;
         private readonly IRepository<View> _repositoryView;
+        private readonly IRepository<Favorite> _repositoryFavorite;
+        private readonly IRepository<PostImage> _repositoryPostImage;
 
         public PostsController(IRepository<Post> repository, IMapper mapper, UserManager<User> userManager, IRepository<PostImage> repositoryImage, IRepository<Favorite> repositoryFavorite, ViewsController viewsController, IPostRepository postRepository, FilesController filesController, IRepository<View> repositoryView)
             : base(repository, mapper)
         {
             _userManager = userManager;
+            _postRepository = postRepository;
+            _repositoryView = repositoryView;
+            _viewsController = viewsController;
+            _filesController = filesController;
             _repositoryPostImage = repositoryImage;
             _repositoryFavorite = repositoryFavorite;
-            _viewsController = viewsController;
-            _postRepository = postRepository;
-            _filesController = filesController;
-            _repositoryView = repositoryView;
         }
 
         [Authorize(Policy = "SuperAdminPolicy")]
@@ -143,9 +143,9 @@ namespace MyApi.Controllers.v1
 
         [AllowAnonymous]
         [HttpGet("{id:int}")]
-        public virtual async Task<ApiResult<List<PostShortSelectDto>>> GetAllByCatId(CancellationToken cancellationToken, int id, int to = 0)
+        public virtual async Task<ApiResult<List<PostShortSelectDto>>> GetAllByCatId(CancellationToken cancellationToken, int id, [FromQuery] SieveModel sieveModel)
         {
-            return await _postRepository.GetAllByCatId(cancellationToken, id, to);
+            return await _postRepository.GetAllByCatId(cancellationToken, id, sieveModel);
         }
 
         [AllowAnonymous]
@@ -164,9 +164,9 @@ namespace MyApi.Controllers.v1
 
         [AllowAnonymous]
         [HttpGet("{id:int}")]
-        public virtual async Task<ApiResult<List<PostShortSelectDto>>> GetByStateId(int id, CancellationToken cancellationToken)
+        public virtual async Task<ApiResult<List<PostShortSelectDto>>> GetByStateId(int id, CancellationToken cancellationToken, [FromQuery] SieveModel sieveModel)
         {
-            return await _postRepository.GetByStateId(cancellationToken, id);
+            return await _postRepository.GetByStateId(cancellationToken, id, sieveModel);
         }
 
         [AllowAnonymous]
@@ -183,6 +183,7 @@ namespace MyApi.Controllers.v1
             return await _postRepository.GetView(cancellationToken, id);
         }
 
+        [NonAction]
         [HttpGet]
         [AllowAnonymous]
         public virtual async Task<ApiResult<List<PostShortSelectDto>>> GetCustom(CancellationToken cancellationToken, int type = 1, int dateType = 1, int count = DefaultTake)
@@ -192,9 +193,9 @@ namespace MyApi.Controllers.v1
 
         [HttpGet]
         [AllowAnonymous]
-        public virtual async Task<ApiResult<List<PostShortSelectDto>>> Search(string str, CancellationToken cancellationToken)
+        public virtual async Task<ApiResult<List<PostShortSelectDto>>> Search(string str, CancellationToken cancellationToken, [FromQuery] SieveModel sieveModel)
         {
-            return await _postRepository.Search(cancellationToken, str);
+            return await _postRepository.Search(cancellationToken, str, sieveModel);
         }
 
         [HttpGet]
@@ -240,7 +241,7 @@ namespace MyApi.Controllers.v1
 
         [HttpGet]
         [AllowAnonymous]
-        public virtual async Task<ApiResult<List<PostShortSelectDto>>> GetShort(CancellationToken cancellationToken, SieveModel sieveModel)
+        public virtual async Task<ApiResult<List<PostShortSelectDto>>> GetShort(CancellationToken cancellationToken, [FromQuery] SieveModel sieveModel)
         {
             return await _postRepository.GetShort(cancellationToken, sieveModel);
         }

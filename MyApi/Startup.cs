@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using OwaspHeaders.Core.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Sieve.Services;
 
 namespace MyApi
 {
@@ -62,6 +63,8 @@ namespace MyApi
             services.AddOptions();
 
             services.AddCronJob();
+
+            services.AddScoped<SieveProcessor>();
 
             services.Configure<SieveOptions>(Configuration.GetSection("Sieve"));
 
