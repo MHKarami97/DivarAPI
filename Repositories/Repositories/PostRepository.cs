@@ -97,17 +97,17 @@ namespace Repositories.Repositories
             return await list.ToListAsync(cancellationToken);
         }
 
-        public async Task<ApiResult<List<PostShortSelectDto>>> GetBySubStateId(CancellationToken cancellationToken, int id)
+        public async Task<ApiResult<List<PostShortSelectDto>>> GetBySubStateId(CancellationToken cancellationToken, int id, SieveModel sieveModel)
         {
-            var list = await TableNoTracking
+            var list = TableNoTracking
                 .Include(a => a.State)
                 .Where(a => !a.VersionStatus.Equals(2) &&
                             a.State.ParentStateId.Equals(id) && a.IsConfirm)
-                .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
-                //.Take(DefaultTake)
-                .ToListAsync(cancellationToken);
+                .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider);
 
-            return list;
+            list = _sieveProcessor.Apply(sieveModel, list);
+
+            return await list.ToListAsync(cancellationToken);
         }
 
         public async Task<ApiResult<List<ViewShortDto>>> GetView(CancellationToken cancellationToken, int id)

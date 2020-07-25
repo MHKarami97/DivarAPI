@@ -171,9 +171,9 @@ namespace MyApi.Controllers.v1
 
         [AllowAnonymous]
         [HttpGet("{id:int}")]
-        public virtual async Task<ApiResult<List<PostShortSelectDto>>> GetBySubStateId(int id, CancellationToken cancellationToken)
+        public virtual async Task<ApiResult<List<PostShortSelectDto>>> GetBySubStateId(int id, CancellationToken cancellationToken, [FromQuery] SieveModel sieveModel)
         {
-            return await _postRepository.GetBySubStateId(cancellationToken, id);
+            return await _postRepository.GetBySubStateId(cancellationToken, id, sieveModel);
         }
 
         [AllowAnonymous]
