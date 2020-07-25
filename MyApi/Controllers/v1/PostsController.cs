@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Sieve.Models;
 using WebFramework.Api;
 
 namespace MyApi.Controllers.v1
@@ -239,9 +240,9 @@ namespace MyApi.Controllers.v1
 
         [HttpGet]
         [AllowAnonymous]
-        public virtual async Task<ApiResult<List<PostShortSelectDto>>> GetShort(CancellationToken cancellationToken)
+        public virtual async Task<ApiResult<List<PostShortSelectDto>>> GetShort(CancellationToken cancellationToken, SieveModel sieveModel)
         {
-            return await _postRepository.GetShort(cancellationToken);
+            return await _postRepository.GetShort(cancellationToken, sieveModel);
         }
 
         [HttpGet("{id:int}")]

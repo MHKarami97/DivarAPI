@@ -1,14 +1,13 @@
 ﻿using System;
 using Common;
 using Autofac;
+using Sieve.Models;
 using AspNetCoreRateLimit;
-using HealthChecks.UI.Client;
 using WebFramework.Swagger;
 using WebFramework.Middlewares;
 using WebFramework.CustomMapping;
 using WebFramework.Configuration;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using OwaspHeaders.Core.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -63,6 +62,8 @@ namespace MyApi
             services.AddOptions();
 
             services.AddCronJob();
+
+            services.Configure<SieveOptions>(Configuration.GetSection("Sieve"));
 
             //services.AddHealthChecks()
             //    .AddSqlServer(Configuration.GetConnectionString("SqlServer"));

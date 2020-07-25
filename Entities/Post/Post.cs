@@ -5,22 +5,43 @@ using Entities.Problem;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Sieve.Attributes;
 
 namespace Entities.Post
 {
     public class Post : BaseEntity
     {
+        [Sieve(CanFilter = false, CanSort = false)]
         public string Title { get; set; }
+
+        [Sieve(CanFilter = false, CanSort = false)]
         public string Text { get; set; }
+
+        [Sieve(CanFilter = true, CanSort = true)]
         public DateTimeOffset Time { get; set; }
+
+        [Sieve(CanFilter = true, CanSort = true)]
         public int Type { get; set; }
+
+        [Sieve(CanFilter = true, CanSort = true)]
         public long Price { get; set; }
+
+        [Sieve(CanFilter = false, CanSort = false)]
         public bool IsConfirm { get; set; }
+
+        [Sieve(CanFilter = false, CanSort = false)]
         public string Phone { get; set; }
+
+        [Sieve(CanFilter = false, CanSort = false)]
         public string Location { get; set; }
 
+        [Sieve(CanFilter = true, CanSort = false)]
         public int CategoryId { get; set; }
+
+        [Sieve(CanFilter = true, CanSort = false)]
         public int StateId { get; set; }
+
+        [Sieve(CanFilter = true, CanSort = true)]
         public int UserId { get; set; }
 
         public State.State State { get; set; }

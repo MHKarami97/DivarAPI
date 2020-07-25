@@ -17,6 +17,8 @@ using Models.Models;
 using Repositories.Contracts;
 using System.Collections.Generic;
 using System.Data;
+using Sieve.Models;
+using Sieve.Services;
 
 namespace Repositories.Repositories
 {
@@ -25,13 +27,15 @@ namespace Repositories.Repositories
         private readonly IRepository<Comment> _repositoryComment;
         private readonly IRepository<PostImage> _repositoryImage;
         private readonly IRepository<View> _repositoryView;
+        private readonly SieveProcessor _sieveProcessor;
 
-        public PostRepository(ApplicationDbContext dbContext, IMapper mapper, IRepository<Comment> repositoryComment, IRepository<View> repositoryView, IRepository<PostImage> repositoryImage)
+        public PostRepository(ApplicationDbContext dbContext, IMapper mapper, IRepository<Comment> repositoryComment, IRepository<View> repositoryView, IRepository<PostImage> repositoryImage, SieveProcessor sieveProcessor)
             : base(dbContext, mapper)
         {
             _repositoryComment = repositoryComment;
             _repositoryView = repositoryView;
             _repositoryImage = repositoryImage;
+            _sieveProcessor = sieveProcessor;
         }
 
         public async Task<ApiResult<List<PostShortSelectDto>>> GetAllByCatId(CancellationToken cancellationToken, int id, int to = 0)
@@ -350,16 +354,17 @@ namespace Repositories.Repositories
             return list;
         }
 
-        public async Task<ApiResult<List<PostShortSelectDto>>> GetShort(CancellationToken cancellationToken)
+        public async Task<ApiResult<List<PostShortSelectDto>>> GetShort(CancellationToken cancellationToken, SieveModel sieveModel)
         {
-            var list = await TableNoTracking
+            var list = TableNoTracking
                 .Where(a => !a.VersionStatus.Equals(2) && a.IsConfirm)
                 .OrderByDescending(a => a.Time)
                 .Include(a => a.Images)
-                .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider)
-                .ToListAsync(cancellationToken);
+                .ProjectTo<PostShortSelectDto>(Mapper.ConfigurationProvider);
 
-            return list;
+            list = _sieveProcessor.Apply(sieveModel, list);
+
+            return await list.ToListAsync(cancellationToken);
         }
 
         public async Task<bool> ChangeStatus(CancellationToken cancellationToken, int id)

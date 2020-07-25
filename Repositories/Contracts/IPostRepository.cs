@@ -5,6 +5,7 @@ using Models.Models;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Sieve.Models;
 
 namespace Repositories.Contracts
 {
@@ -28,9 +29,9 @@ namespace Repositories.Contracts
 
         Task<ApiResult<List<PostShortSelectDto>>> Search(CancellationToken cancellationToken, string str);
 
-        Task<ApiResult<List<PostShortStatusSelectDto>>> GetByStatus(CancellationToken cancellationToken, bool stauts);
+        Task<ApiResult<List<PostShortStatusSelectDto>>> GetByStatus(CancellationToken cancellationToken, bool status);
 
-        Task<ApiResult<List<PostShortSelectDto>>> GetShort(CancellationToken cancellationToken);
+        Task<ApiResult<List<PostShortSelectDto>>> GetShort(CancellationToken cancellationToken,SieveModel sieveModel );
 
         Task<int> AddImage(List<string> images, int postId, CancellationToken cancellationToken);
 
