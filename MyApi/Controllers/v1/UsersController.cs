@@ -186,14 +186,14 @@ namespace MyApi.Controllers.v1
             {
                 _logger.LogError("ایمیل اشتباه");
 
-                throw new DataException("ایمیل یا رمز عبور اشتباه است");
+                return BadRequest("ایمیل یا رمز عبور اشتباه است");
             }
 
             if (user.LockoutEnabled && user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.Now)
             {
                 _logger.LogError("قفل بودن کاربر");
 
-                throw new DataException("حساب شما قفل شده است، لطفا کمی بعد تلاش کنید");
+                return BadRequest("حساب شما قفل شده است، لطفا کمی بعد تلاش کنید");
             }
 
             if (user.LockoutEnabled && user.LockoutEnd.HasValue && user.LockoutEnd.Value < DateTimeOffset.Now)
@@ -206,11 +206,11 @@ namespace MyApi.Controllers.v1
 
                 _logger.LogError("رمز عبور اشتباه");
 
-                throw new DataException("ایمیل یا رمز عبور اشتباه است");
+                return BadRequest("ایمیل یا رمز عبور اشتباه است");
             }
 
             if (!user.IsActive)
-                throw new DataException("حساب شما قفل شده است");
+                return BadRequest("حساب شما مسدود شده است، لطفا با مدیریت تماس بگیرید");
 
             await _userRepository.UpdateSecurityStampAsync(user, cancellationToken);
 
@@ -221,7 +221,7 @@ namespace MyApi.Controllers.v1
 
         [HttpPost]
         [AllowAnonymous]
-        public virtual async Task<ActionResult> LoginByPhone(LoginDto dto, CancellationToken cancellationToken)
+        public virtual async Task<ApiResult<AccessToken>> LoginByPhone(LoginDto dto, CancellationToken cancellationToken)
         {
             Assert.NotNullArgument(dto.Phone, "شماره وارد شده نامعتبر است");
 
@@ -236,7 +236,7 @@ namespace MyApi.Controllers.v1
                 {
                     _logger.LogError("شماره موبایل اشتباه");
 
-                    throw new DataException("شماره موبایل اشتباه است");
+                    return BadRequest("شماره موبایل اشتباه است");
                 }
 
                 user.VerifyCode = _security.RandomNumber(11111, 99999);
@@ -245,6 +245,9 @@ namespace MyApi.Controllers.v1
 
                 if (!result.Succeeded)
                     throw new BadRequestException("خطا در ذخیره اطلاعات");
+
+                if (!user.IsActive)
+                    return BadRequest("حساب شما مسدود شده است، لطفا با مدیریت تماس بگیرید");
 
                 //todo send code
 
@@ -255,7 +258,7 @@ namespace MyApi.Controllers.v1
                 var user = await _userRepository.GetByPhone(dto.Phone, cancellationToken);
 
                 if (user == null)
-                    throw new DataException("شماره موبایل اشتباه است");
+                    return BadRequest("شماره موبایل اشتباه است");
 
                 if (!user.VerifyCode.Equals(dto.VerifyCode))
                 {
@@ -263,14 +266,17 @@ namespace MyApi.Controllers.v1
 
                     _logger.LogError("کد تایید موبایل اشتباه");
 
-                    throw new BadRequestException("اطلاعات اشتباه است");
+                    return BadRequest("کد تایید وارد شده اشتباه است");
                 }
+
+                if (!user.IsActive)
+                    return BadRequest("حساب شما مسدود شده است، لطفا با مدیریت تماس بگیرید");
 
                 if (user.LockoutEnabled && user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.Now)
                 {
                     _logger.LogError("قفل بودن حساب");
 
-                    throw new DataException("حساب شما قفل شده است، لطفا کمی بعد تلاش کنید");
+                    return BadRequest("حساب شما قفل شده است، لطفا کمی بعد تلاش کنید");
                 }
 
                 if (user.LockoutEnabled && user.LockoutEnd.HasValue && user.LockoutEnd.Value < DateTimeOffset.Now)
@@ -287,7 +293,7 @@ namespace MyApi.Controllers.v1
 
                 var jwt = await _jwtService.GenerateAsync(user);
 
-                return new JsonResult(jwt);
+                return jwt;
             }
         }
 
